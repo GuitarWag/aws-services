@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Services Reference</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .pill-scroll::-webkit-scrollbar { display: none; }
+    .pill-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 min-h-screen transition-colors duration-200">
+
+  <!-- Sticky Header -->
+  <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="flex items-center gap-2">
+          <svg class="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+          <h1 class="text-lg font-semibold text-slate-900 dark:text-white">AWS Services</h1>
+        </div>
+        <div class="ml-auto flex items-center gap-2">
+          <span id="meta" class="text-xs text-slate-500 dark:text-slate-400 mr-1"></span>
+          <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">/</kbd>
+          <button id="darkToggle" onclick="toggleDark()" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
+            <svg id="sunIcon" class="w-4 h-4 text-slate-500 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            <svg id="moonIcon" class="w-4 h-4 text-slate-500 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Search -->
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <input type="text" id="q" placeholder="Search services, keywords, use cases..." oninput="render()" class="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-shadow">
+        <button id="clearBtn" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hidden transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Category Pills -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-3">
+      <div id="pills" class="pill-scroll flex gap-1.5 overflow-x-auto"></div>
+    </div>
+  </header>
+
+  <!-- Card Grid -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+  </main>
+
+<script>
+const CAT = {
+  "Compute":        {bg:"#DBEAFE",tc:"#1E40AF",dkbg:"#1E3A5F",dktc:"#93C5FD"},
+  "Storage":        {bg:"#FEF3C7",tc:"#92400E",dkbg:"#422006",dktc:"#FCD34D"},
+  "Database":       {bg:"#D1FAE5",tc:"#065F46",dkbg:"#064E3B",dktc:"#6EE7B7"},
+  "Analytics":      {bg:"#EDE9FE",tc:"#5B21B6",dkbg:"#2E1065",dktc:"#C4B5FD"},
+  "ML / AI":        {bg:"#FCE7F3",tc:"#9D174D",dkbg:"#500724",dktc:"#F9A8D4"},
+  "Networking":      {bg:"#CCFBF1",tc:"#115E59",dkbg:"#042F2E",dktc:"#5EEAD4"},
+  "Security":       {bg:"#FEE2E2",tc:"#991B1B",dkbg:"#450A0A",dktc:"#FCA5A5"},
+  "Dev tools":      {bg:"#F5F5F4",tc:"#57534E",dkbg:"#292524",dktc:"#D6D3D1"},
+  "Mgmt":           {bg:"#FED7AA",tc:"#9A3412",dkbg:"#431407",dktc:"#FDBA74"},
+  "Integration":    {bg:"#D9F99D",tc:"#3F6212",dkbg:"#365314",dktc:"#BEF264"},
+  "IoT":            {bg:"#FDE68A",tc:"#78350F",dkbg:"#451A03",dktc:"#FCD34D"},
+  "Migration":      {bg:"#BFDBFE",tc:"#1E3A8A",dkbg:"#172554",dktc:"#93C5FD"},
+  "Media":          {bg:"#FBCFE8",tc:"#831843",dkbg:"#500724",dktc:"#F9A8D4"},
+  "Business apps":  {bg:"#DDD6FE",tc:"#4C1D95",dkbg:"#2E1065",dktc:"#C4B5FD"},
+  "End-user":       {bg:"#A7F3D0",tc:"#064E3B",dkbg:"#042F2E",dktc:"#6EE7B7"},
+  "Front-end":      {bg:"#FDBA74",tc:"#7C2D12",dkbg:"#431407",dktc:"#FDBA74"},
+  "Game":           {bg:"#D9F99D",tc:"#1A2E05",dkbg:"#365314",dktc:"#BEF264"},
+  "Cost":           {bg:"#E7E5E4",tc:"#44403C",dkbg:"#1C1917",dktc:"#A8A29E"},
+  "Blockchain":     {bg:"#99F6E4",tc:"#134E4A",dkbg:"#042F2E",dktc:"#5EEAD4"},
+  "Quantum":        {bg:"#C4B5FD",tc:"#3B0764",dkbg:"#2E1065",dktc:"#C4B5FD"},
+  "Satellite":      {bg:"#93C5FD",tc:"#1E3A8A",dkbg:"#172554",dktc:"#93C5FD"},
+  "Containers":     {bg:"#FED7AA",tc:"#7C2D12",dkbg:"#431407",dktc:"#FDBA74"},
+};
+
+const S = [
+  // ── Compute ──
+  {r:"Amazon EC2",           h:"Rent any size of virtual server, by the hour",               d:"The OG cloud service. Pick CPU/RAM/GPU, pick an OS, it's running in minutes. Everything else in AWS can run on these.",                                     c:"Compute"},
+  {r:"Amazon EC2 Spot",      h:"Same VMs, up to 90% cheaper — but interruptible",            d:"AWS sells its spare capacity cheap. Your workload can be killed with 2-min notice, so only use for fault-tolerant jobs like batch processing or ML training.", c:"Compute"},
+  {r:"Amazon EC2 Reserved",  h:"Pre-pay for a VM and save up to 72%",                        d:"Commit to 1 or 3 years and lock in a big discount. Makes sense once you know your baseline workload won't change.",                                            c:"Compute"},
+  {r:"Amazon Lightsail",     h:"Simple VPS — one price, batteries included",                 d:"EC2 with the complexity removed. You get a VM + SSD + bandwidth + DNS + static IP for a flat monthly fee. Great for small sites.",                             c:"Compute"},
+  {r:"AWS Lambda",           h:"Run a function — AWS handles everything else",               d:"Upload code, define a trigger (HTTP request, S3 upload, timer...), pay only for the milliseconds it runs. Zero servers to think about.",                        c:"Compute"},
+  {r:"AWS Fargate",          h:"Run containers without touching a server",                   d:"You give AWS a Docker image; Fargate figures out where to run it, scales it, and bills per second. No clusters to manage.",                                    c:"Compute"},
+  {r:"AWS Elastic Beanstalk",h:"Deploy your app — AWS wires up the plumbing",               d:"Push your code; Beanstalk auto-provisions load balancers, auto-scaling, and EC2. You keep full control but skip the setup.",                                   c:"Compute"},
+  {r:"AWS Batch",            h:"Queue up thousands of compute jobs, AWS runs them",          d:"You define jobs and resource requirements; Batch provisions the right EC2 instances, runs each job, then terminates them. No idle capacity.",                  c:"Compute"},
+  {r:"AWS App Runner",       h:"Deploy a container or repo URL to a live HTTPS endpoint",   d:"Fastest path from code to a running web service. No Dockerfile? It'll build one. No infra knowledge needed at all.",                                          c:"Compute"},
+  {r:"AWS Outposts",         h:"Actual AWS hardware installed in your data center",          d:"AWS ships you a rack, you plug it in, and it runs the same APIs as the cloud. For data that legally can't leave your building.",                               c:"Compute"},
+  {r:"AWS Wavelength",       h:"Run code inside a 5G carrier's network",                    d:"AWS infrastructure embedded at the edge of Verizon/Vodafone/etc. networks. App traffic never leaves the carrier, giving sub-10ms latency to 5G devices.",     c:"Compute"},
+  {r:"AWS Local Zones",      h:"Run apps closer to end users in major metro areas",          d:"Extensions of an AWS Region placed in large population centers. Run latency-sensitive workloads (gaming, real-time rendering) closer to your users without deploying a full Region.", c:"Compute"},
+  {r:"VMware Cloud on AWS",  h:"Move VMware VMs to AWS without changing anything",          d:"Run vSphere workloads on bare-metal EC2. Same VMware tools, same APIs, but on AWS hardware. The easiest migration path for VMware shops.",                    c:"Compute"},
+
+  // ── Storage ──
+  {r:"Amazon S3",            h:"Store any file, forever, at any scale",                     d:"Object storage with 11 nines of durability. Every AWS service writes to it. Also hosts static websites. The universal data sink.",                             c:"Storage"},
+  {r:"Amazon S3 Glacier",    h:"Long-term archive storage — cheap, slow retrieval",         d:"Pay pennies per GB/month. Access takes minutes to hours. Perfect for compliance archives, backups, and data you almost never need.",                           c:"Storage"},
+  {r:"Amazon EBS",           h:"A persistent hard drive for your EC2 instance",             d:"Block storage that attaches to one VM at a time, like a USB drive. Survives reboots. Choose SSD or HDD tiers.",                                               c:"Storage"},
+  {r:"Amazon EFS",           h:"A network drive that many Linux servers share at once",     d:"NFS-based file system that auto-scales to petabytes. Many EC2 instances mount it simultaneously — great for shared content and ML datasets.",                  c:"Storage"},
+  {r:"Amazon FSx for Windows",h:"Fully managed Windows file share in the cloud",           d:"A real Windows Server file system with SMB/NTFS/Active Directory support. Lift-and-shift Windows apps that need shared storage.",                              c:"Storage"},
+  {r:"Amazon FSx for Lustre",h:"Blazing-fast parallel file system for HPC and ML",         d:"Lustre clusters managed by AWS, integrated with S3. Used for genomics, financial modelling, and GPU training jobs that need hundreds of GB/s.",                c:"Storage"},
+  {r:"Amazon FSx for NetApp ONTAP",h:"NetApp in the cloud, fully managed",                 d:"Bring your NetApp workflows and tools to AWS without retraining or rewriting. Supports NFS, SMB, and iSCSI simultaneously.",                                   c:"Storage"},
+  {r:"Amazon FSx for OpenZFS",h:"Managed OpenZFS — fast snapshots, ZFS features",         d:"For teams already using ZFS on-premises. Migrate without changing how your apps read and write data.",                                                          c:"Storage"},
+  {r:"Amazon File Cache",    h:"Temporary high-speed cache for scattered file data",        d:"Links multiple S3 buckets and on-prem NFS mounts into one unified fast layer. Great for burst compute jobs that pull from many sources.",                      c:"Storage"},
+  {r:"AWS Storage Gateway",  h:"Your on-prem apps secretly store data in S3",              d:"A virtual appliance in your data center. Your apps see NFS/SMB/iSCSI; behind the scenes it streams data to S3, Glacier, or EBS.",                            c:"Storage"},
+  {r:"AWS Backup",           h:"One place to schedule backups across all AWS resources",   d:"Set policies once; AWS backs up EC2, RDS, DynamoDB, EFS, S3, and more on a schedule. Handles retention and cross-region copies.",                             c:"Storage"},
+  {r:"AWS Elastic Disaster Recovery",h:"Continuous replication to fast failover to AWS",   d:"Replicates on-prem or cloud servers to a cheap staging area in AWS. When disaster strikes, spin up full instances in minutes.",                                c:"Storage"},
+
+  // ── Database ──
+  {r:"Amazon RDS",           h:"Managed relational DB — you pick the engine",              d:"AWS handles provisioning, patching, backups, and failover. Pick MySQL, PostgreSQL, Oracle, SQL Server, or MariaDB. You just run queries.",                     c:"Database"},
+  {r:"Amazon Aurora",        h:"AWS-built DB that's 5x faster than MySQL at 1/10th the cost",d:"Cloud-native engine compatible with MySQL and PostgreSQL. Distributes data across 3 AZs automatically. Scales reads with up to 15 replicas.",               c:"Database"},
+  {r:"Amazon Aurora Serverless",h:"Aurora that scales to zero when idle",                 d:"Perfect for apps with unpredictable or intermittent traffic. You pay per second of actual use. No minimum capacity charge.",                                     c:"Database"},
+  {r:"Amazon Aurora DSQL",   h:"Distributed SQL that's always available, globally",        d:"Newest Aurora variant. Active-active across regions with no single point of failure. For apps that can never afford downtime.",                                c:"Database"},
+  {r:"Amazon DynamoDB",      h:"NoSQL key-value store — millisecond reads at any scale",   d:"Handles 10 trillion requests/day at Amazon. Single-digit millisecond latency. Scales automatically. You never provision capacity manually.",                  c:"Database"},
+  {r:"Amazon ElastiCache",   h:"In-memory cache layer — makes slow DB calls instant",      d:"Managed Redis or Memcached. Put it in front of your database to serve hot data from RAM. Microsecond reads instead of milliseconds.",                         c:"Database"},
+  {r:"Amazon MemoryDB",      h:"Redis that doesn't lose data on restart",                  d:"Unlike a cache, MemoryDB writes to a durable transaction log. Acts as your primary database, not just a speed layer.",                                         c:"Database"},
+  {r:"Amazon Neptune",       h:"Graph database — built for 'how are things connected?'",  d:"Store billions of relationships and query them in milliseconds. Use for fraud detection, social graphs, recommendation engines.",                               c:"Database"},
+  {r:"Amazon DocumentDB",    h:"Managed MongoDB-compatible document database",             d:"Run MongoDB workloads without running MongoDB. AWS handles the ops. Useful if you're already in the MongoDB ecosystem.",                                        c:"Database"},
+  {r:"Amazon Keyspaces",     h:"Managed Apache Cassandra — no cluster ops",               d:"Use your existing Cassandra drivers and CQL queries. AWS handles scaling and availability. For wide-column, high-write workloads.",                            c:"Database"},
+  {r:"Amazon Timestream",    h:"Time-series DB — made for sensor and metric data",         d:"Purpose-built for data that arrives in timestamp order. 1/10th the cost of storing the same data in RDS. Auto-tiers warm data to cheap storage.",             c:"Database"},
+  {r:"Amazon RDS for Db2",   h:"Managed IBM Db2 in the cloud",                             d:"Lift-and-shift Db2 workloads to AWS without rewriting. AWS patches, backs up, and scales the engine.",                                                        c:"Database"},
+  {r:"Amazon Lightsail managed DBs",h:"Simple managed MySQL/PostgreSQL, flat price",      d:"A fixed monthly price covers the DB instance, storage, and bandwidth. Designed to pair with Lightsail compute for simple apps.",                              c:"Database"},
+
+  // ── Analytics ──
+  {r:"Amazon Redshift",      h:"SQL data warehouse for petabyte-scale analytics",          d:"Columnar storage + massively parallel queries. Run complex analytics across terabytes in seconds for less than on-prem warehouses.",                           c:"Analytics"},
+  {r:"Amazon Redshift Serverless",h:"Redshift that auto-scales and bills per use",         d:"No cluster to provision. Query and it spins up; idle and it shuts down. Good for ad hoc analytics and variable workloads.",                                   c:"Analytics"},
+  {r:"Amazon Athena",        h:"Run SQL directly on files sitting in S3",                  d:"Point it at CSV, Parquet, or JSON in S3 and query with standard SQL. No database to load, no ETL. Pay only for data scanned.",                               c:"Analytics"},
+  {r:"Amazon EMR",           h:"Managed Spark / Hadoop big-data cluster",                  d:"Spin up a cluster, run your Spark or Hive jobs, then terminate it. 3x faster than standard Spark and half the cost of on-prem clusters.",                    c:"Analytics"},
+  {r:"Amazon Kinesis",       h:"Ingest and process millions of streaming events in real time",d:"Umbrella for four services: Data Streams (collect), Data Firehose (deliver to S3/Redshift), Flink (process), Video Streams.",                              c:"Analytics"},
+  {r:"Amazon OpenSearch Service",h:"Managed Elasticsearch — search, logs, dashboards",    d:"Runs OpenSearch/Elasticsearch clusters for you. Used for log analytics, full-text search, and Kibana/OpenSearch Dashboards.",                                  c:"Analytics"},
+  {r:"Amazon QuickSight",    h:"BI dashboards your whole org can use from a browser",      d:"Build charts, embed them in your app, or share with execs. Scales to thousands of users with no servers. ML-powered anomaly detection built in.",             c:"Analytics"},
+  {r:"AWS Glue",             h:"ETL service — discover, transform, load your data",        d:"Crawls your data sources, infers schemas, and runs Spark jobs to move data between S3, Redshift, RDS, etc. Visual editor included.",                          c:"Analytics"},
+  {r:"AWS Lake Formation",   h:"Build a governed data lake in days, not months",           d:"Manages the hard parts: ingestion, cataloging, access control, and audit. Enforces permissions across Athena, Redshift, and EMR.",                             c:"Analytics"},
+  {r:"Amazon MSK",           h:"Managed Apache Kafka — no cluster babysitting",            d:"Fully managed Kafka with multi-AZ replication. Use your existing Kafka producers and consumers unchanged. AWS handles patching and scaling.",                  c:"Analytics"},
+  {r:"Amazon MSK Serverless",h:"Kafka without sizing clusters",                            d:"Just publish and consume. Capacity scales automatically. Pay for what you use. Best for spiky or unpredictable streaming workloads.",                          c:"Analytics"},
+  {r:"AWS Data Exchange",    h:"Subscribe to third-party datasets from a marketplace",     d:"Reuters, Dun & Bradstreet, financial data, healthcare records — subscribe once and the data lands in your S3 automatically.",                                  c:"Analytics"},
+  {r:"AWS Clean Rooms",      h:"Analyze data jointly with partners without sharing the raw data",d:"Both parties contribute data; Clean Rooms runs queries across the combined set. Neither side ever sees the other's raw records.",                       c:"Analytics"},
+  {r:"AWS Entity Resolution",h:"De-duplicate and link records across datasets",            d:"Match customer records from CRM, ad platform, and loyalty DB into a single identity — without custom deduplication code.",                                    c:"Analytics"},
+  {r:"Amazon DataZone",      h:"Data catalog with governed access across your org",        d:"Publish datasets to a business catalog, manage who can access what, and let analysts discover data across accounts and sources.",                              c:"Analytics"},
+  {r:"Amazon FinSpace",      h:"Data platform purpose-built for financial services",       d:"Ingest, catalog, and analyze petabytes of financial data with time-series functions like Bollinger bands and VWAP built in.",                                  c:"Analytics"},
+  {r:"Amazon MWAA",          h:"Managed Apache Airflow — orchestrate data pipelines",      d:"Run Airflow without running Airflow. AWS manages the scheduler, workers, and web server. Write DAGs in Python as usual.",                                     c:"Analytics"},
+
+  // ── ML / AI ──
+  {r:"Amazon SageMaker AI",  h:"End-to-end ML platform — build, train, deploy",           d:"Notebooks, data labeling, model training on GPU clusters, experiment tracking, endpoint hosting, and MLOps pipelines — all in one place.",                    c:"ML / AI"},
+  {r:"Amazon SageMaker Canvas",h:"No-code ML — drag-and-drop model building",             d:"Visual interface for building ML models without writing code. Import data, auto-train, and get predictions. Designed for business analysts and non-technical users.", c:"ML / AI"},
+  {r:"Amazon Bedrock",       h:"Call foundation models (Anthropic, Meta, Mistral...) via one API",d:"No GPUs, no model hosting. Pick a model, send a prompt, get a response. Add RAG, guardrails, and agents on top.",                                       c:"ML / AI"},
+  {r:"Amazon Bedrock Knowledge Bases",h:"RAG for Bedrock — connect your data to foundation models",d:"Point Bedrock at your S3 buckets, web pages, or databases. It chunks, embeds, and indexes your data so models can answer questions grounded in your content, not hallucinations.", c:"ML / AI"},
+  {r:"Amazon Bedrock Agents",h:"Give foundation models the ability to call APIs and plan tasks",d:"An agent reasons about what to do, which APIs to call, and in what order. Orchestrates multi-step tasks like booking a trip or processing an order without custom glue code.", c:"ML / AI"},
+  {r:"Amazon Bedrock Guardrails",h:"Content filtering and denial topics for Bedrock models",d:"Block harmful content, deny specific topics, and mask PII in prompts and responses. Works across all Bedrock models — set policy once, apply everywhere.", c:"ML / AI"},
+  {r:"Amazon Bedrock Model Evaluation",h:"Compare model outputs side-by-side with automatic evaluation",d:"Run your test prompts against multiple models and compare quality, accuracy, and cost. Supports automatic metrics and human review workflows.", c:"ML / AI"},
+  {r:"Amazon Titan",         h:"AWS's own foundation model family for text, image, and embeddings",d:"Built by AWS and available in Bedrock. Titan Text for generation, Titan Image for image generation, Titan Embeddings for search and RAG. Cost-effective alternative to third-party models.", c:"ML / AI"},
+  {r:"Amazon Q",             h:"AI assistant for your work and your codebase",             d:"Q Business answers questions from your company's data. Q Developer writes, reviews, and upgrades code in your IDE.",                                          c:"ML / AI"},
+  {r:"AWS Trainium",         h:"Custom AWS chip purpose-built for training deep learning models",d:"Lower cost per training job than general-purpose GPUs. Available in EC2 Trn1 instances. Used for training large language models, diffusion models, and other deep learning workloads.", c:"ML / AI"},
+  {r:"AWS Inferentia",       h:"Custom AWS chip purpose-built for running ML inference",d:"Lowest cost inference in the cloud. Available in EC2 Inf2 instances. Delivers high throughput for text generation, image classification, and speech recognition at a fraction of GPU cost.", c:"ML / AI"},
+  {r:"Amazon Rekognition",   h:"Send an image and get back what's in it",                   d:"Detects objects, people, text, faces, and inappropriate content. Also does face comparison and celebrity recognition.",                                        c:"ML / AI"},
+  {r:"Amazon Comprehend",    h:"Extract meaning from text — sentiment, entities, topics",  d:"Point it at documents and it returns: sentiment (positive/negative), key phrases, people/places/orgs, and dominant language.",                               c:"ML / AI"},
+  {r:"Amazon Textract",      h:"OCR that also understands tables and form fields",         d:"Extracts structured data from scanned documents. Goes beyond reading pixels — it knows which text belongs to which form label.",                              c:"ML / AI"},
+  {r:"Amazon Transcribe",    h:"Speech to text — files or live audio",                    d:"Handles accents, technical jargon, and noisy audio. Medical variant understands clinical terminology. Call analytics variant measures sentiment.",              c:"ML / AI"},
+  {r:"Amazon Polly",         h:"Text to lifelike speech in 60+ voices",                   d:"Neural TTS that sounds human. Pick a voice and language; get back an MP3. Use for audiobooks, accessibility, or voice interfaces.",                           c:"ML / AI"},
+  {r:"Amazon Lex",           h:"Build chatbots — same tech as Alexa",                     d:"Define intents and utterances; Lex handles NLU and slot filling. Deploy to web, mobile, or Alexa. No ML degree needed.",                                      c:"ML / AI"},
+  {r:"Amazon Translate",     h:"Neural machine translation across 75+ languages",          d:"More accurate than rule-based systems. Handles formal and colloquial registers. Batch-translate a whole document store or call the API in real time.",        c:"ML / AI"},
+  {r:"Amazon Forecast",      h:"ML-powered demand forecasting from your own data",         d:"Feed it historical sales/usage data; it picks the best algorithm and returns forecasts with confidence intervals. No ML expertise needed.",                   c:"ML / AI"},
+  {r:"Amazon Personalize",   h:"Add 'recommended for you' without a data science team",   d:"Feed it user behavior (clicks, purchases, views); it builds a real-time recommendation model trained on your data, not generic data.",                       c:"ML / AI"},
+  {r:"Amazon Kendra",        h:"Smart enterprise search — returns answers, not links",     d:"Indexes your SharePoint, S3 docs, databases, and wikis. Users ask a question in plain English and get the actual answer.",                                    c:"ML / AI"},
+  {r:"Amazon Fraud Detector",h:"Score every transaction for fraud probability",           d:"Built on Amazon's own fraud detection models trained on 20+ years of e-commerce data. Customized to your dataset.",                                           c:"ML / AI"},
+  {r:"Amazon Lookout for Equipment",h:"Predict machine failures from sensor data",        d:"Train a model on your equipment's normal sensor readings; it alerts you when patterns suggest an imminent breakdown.",                                         c:"ML / AI"},
+  {r:"Amazon Lookout for Vision",h:"Find visual defects in products with computer vision",d:"Train on a small set of 'good' and 'bad' images; deploy to a camera on your production line to flag defects automatically.",                                   c:"ML / AI"},
+  {r:"Amazon Monitron",      h:"Plug-and-play predictive maintenance kit",                d:"Hardware sensors + gateway + ML service as a bundle. Attaches to industrial equipment; detects abnormal vibration and temperature.",                          c:"ML / AI"},
+  {r:"Amazon Comprehend Medical",h:"Extract clinical info from doctor's notes and reports",d:"Identifies medications, dosages, diagnoses, and procedures from unstructured medical text. HIPAA-eligible.",                                                  c:"ML / AI"},
+  {r:"Amazon CodeGuru",      h:"Find bugs and profile slow code automatically",           d:"Reviewer scans PRs for security issues and logic bugs. Profiler identifies the specific lines of code burning the most CPU.",                                  c:"ML / AI"},
+  {r:"Amazon DevOps Guru",   h:"ML that spots your app's problems before users do",       d:"Learns what 'normal' looks like for your service, then flags deviations — latency spikes, error surges — before they become outages.",                       c:"ML / AI"},
+  {r:"Amazon A2I",           h:"Route low-confidence ML predictions to human reviewers",  d:"When your model isn't sure, A2I queues the item for a human to check. Integrates with Textract, Rekognition, and custom models.",                            c:"ML / AI"},
+  {r:"Amazon PartyRock",     h:"No-code generative AI app builder for learning",          d:"Drag prompts and model widgets together to build apps — no API key, no code. Good for prototyping and learning prompt engineering.",                          c:"ML / AI"},
+  {r:"Amazon Omics",         h:"Store and analyze genomics and proteomics data at scale", d:"Purpose-built for life sciences. Ingest FASTQ/BAM/VCF files, run bioinformatics workflows, and query variants across cohorts.",                              c:"ML / AI"},
+  {r:"AWS DeepRacer",        h:"Learn reinforcement learning by racing a tiny car",       d:"A 1/18-scale autonomous race car. Train an RL model in simulation, deploy it to the physical car, race globally.",                                            c:"ML / AI"},
+  {r:"AWS HealthLake",       h:"HIPAA-eligible lake for health records (FHIR format)",    d:"Normalizes clinical data from disparate sources into FHIR, making it queryable and ready for ML or analytics.",                                               c:"ML / AI"},
+  {r:"AWS HealthScribe",     h:"Transcribe patient-clinician conversations into clinical notes",d:"Records a consultation, identifies who's speaking, extracts medical terms, and drafts a structured clinical note automatically.",                       c:"ML / AI"},
+  {r:"AWS Panorama",         h:"Run computer vision models on your existing IP cameras",  d:"An edge appliance that connects to your camera network. Runs ML inference locally — no video upload to the cloud needed.",                                    c:"ML / AI"},
+  {r:"Amazon Mechanical Turk",h:"Access a global crowd of human workers for tasks",     d:"Distribute image labeling, surveys, transcription, or any task that needs human judgment to thousands of workers via an API.",                   c:"ML / AI"},
+
+  // ── Networking ──
+  {r:"Amazon VPC",           h:"Your private, isolated section of the AWS network",       d:"Define your own IP ranges, subnets, route tables, and gateways. Everything you run in AWS lives inside a VPC.",                                              c:"Networking"},
+  {r:"Amazon CloudFront",    h:"CDN — serve content from 400+ edge locations worldwide",  d:"Cache your assets, APIs, and video near your users. Also integrates with WAF and Shield for security at the edge.",                                           c:"Networking"},
+  {r:"Amazon Route 53",      h:"DNS + domain registration + health-based routing",        d:"Buy domains, map them to AWS resources, and set routing policies (latency-based, geo, failover). Monitors endpoint health.",                                  c:"Networking"},
+  {r:"AWS Direct Connect",   h:"Dedicated private fiber from your office to AWS",         d:"Bypasses the public internet entirely. More consistent latency and bandwidth, lower data transfer costs for high-volume workloads.",                          c:"Networking"},
+  {r:"Elastic Load Balancing",h:"Automatically spread traffic across healthy instances",  d:"Three flavors: Application LB (HTTP/HTTPS, layer 7), Network LB (TCP, ultra-low latency), Gateway LB (third-party appliances).",                            c:"Networking"},
+  {r:"AWS Global Accelerator",h:"Route users over AWS's backbone instead of the internet",d:"Your traffic enters AWS's private network at the nearest edge and stays there. Reduces jitter and improves availability for global apps.",                    c:"Networking"},
+  {r:"Amazon API Gateway",   h:"A managed front door for your APIs",                      d:"Handle auth, rate limiting, request routing, and monitoring without building any of it yourself. Scales to millions of calls.",                               c:"Networking"},
+  {r:"AWS Transit Gateway",  h:"Hub that connects all your VPCs and on-prem networks",   d:"Instead of peering every VPC to every other, connect all of them to one gateway. Dramatically simplifies large multi-account networks.",                     c:"Networking"},
+  {r:"AWS PrivateLink",      h:"Access AWS services without leaving the AWS network",     d:"Traffic from your VPC to S3, DynamoDB, etc. never goes over the internet. Reduces attack surface.",                                                          c:"Networking"},
+  {r:"AWS App Mesh",         h:"Service mesh for microservices observability and control",d:"Manages traffic between your containers and functions with consistent routing rules, retries, and observability — no code changes.",                          c:"Networking"},
+  {r:"AWS Cloud Map",        h:"Service discovery — find your resources by name",         d:"Register your microservices with custom names; Cloud Map keeps their addresses up to date so services can always find each other.",                          c:"Networking"},
+  {r:"Site-to-Site VPN",     h:"Encrypted tunnel from your network to your VPC",         d:"Connects your on-prem router to AWS over the internet, encrypted with IPSec. Cheaper and faster to set up than Direct Connect.",                             c:"Networking"},
+  {r:"AWS Verified Access",  h:"Zero-trust access to corporate apps — no VPN",           d:"Evaluates every request against identity and device posture. Grants access per-application rather than putting users on the whole network.",                  c:"Networking"},
+  {r:"Amazon VPC Lattice",   h:"Service-to-service networking across accounts and VPCs", d:"Handles auth, routing, and monitoring for cross-VPC service calls without custom code or complex VPC peering setups.",                                        c:"Networking"},
+  {r:"AWS Private 5G",       h:"Deploy your own private cellular network on-premises",   d:"AWS ships you small cells, SIM cards, and the 5G core. Connect factory equipment, robots, or vehicles without Wi-Fi dead zones.",                            c:"Networking"},
+
+  // ── Security ──
+  {r:"AWS IAM",              h:"Control who can do what across all of AWS",              d:"The security backbone. Users, roles, groups, and policies define every permission. The first thing you configure on any AWS account.",                        c:"Security"},
+  {r:"Amazon Cognito",       h:"Add user sign-up, sign-in, and auth to your app",        d:"Handles registration, login, MFA, and social sign-in (Google, Apple, Facebook). Returns JWT tokens. Scales to millions of users.",                          c:"Security"},
+  {r:"AWS KMS",              h:"Create and control encryption keys",                     d:"Generates and stores cryptographic keys in HSMs. Almost every AWS service can encrypt data with a KMS key. Logs all key usage to CloudTrail.",               c:"Security"},
+  {r:"AWS Secrets Manager",  h:"Store and auto-rotate passwords and API keys",           d:"Your app calls the API to get the current password; Secrets Manager rotates it on a schedule. No hardcoded secrets in code or config.",                      c:"Security"},
+  {r:"Amazon GuardDuty",     h:"Threat detection — watches your logs for suspicious activity",d:"Analyzes CloudTrail, DNS, VPC Flow Logs, and S3 access with ML. Flags cryptocurrency mining, credential theft, unusual API calls.",                   c:"Security"},
+  {r:"Amazon Inspector",     h:"Continuously scan for software vulnerabilities",         d:"Checks EC2 instances and container images against known CVE databases. Prioritizes findings by network exposure and exploitability.",                        c:"Security"},
+  {r:"Amazon Macie",         h:"Find PII and sensitive data accidentally left in S3",    d:"Scans your buckets with ML to find credit cards, social security numbers, health records. Alerts on publicly exposed buckets.",                             c:"Security"},
+  {r:"Amazon Detective",     h:"Investigate a security finding — trace it to root cause",d:"Automatically correlates GuardDuty findings, CloudTrail logs, and VPC flows into an interactive graph. Answers 'who did what, when, from where?'",          c:"Security"},
+  {r:"AWS Security Hub",     h:"One dashboard for all your security findings",           d:"Aggregates alerts from GuardDuty, Inspector, Macie, Config, and partner tools. Scores your overall security posture.",                                      c:"Security"},
+  {r:"AWS Shield",           h:"DDoS protection — Standard is free, Advanced is 24/7",  d:"Standard automatically protects all AWS resources at no cost. Advanced adds bigger mitigation capacity and a 24/7 response team.",                           c:"Security"},
+  {r:"AWS WAF",              h:"Filter web traffic — block SQLi, XSS, bad bots",        d:"Rule-based firewall for CloudFront, ALB, and API Gateway. AWS-managed rule sets cover OWASP Top 10 out of the box.",                                        c:"Security"},
+  {r:"AWS Certificate Manager",h:"Free SSL/TLS certificates, auto-renewed",             d:"Provision certs for your domains in minutes. Attach to CloudFront or ALB. AWS renews them automatically before they expire.",                               c:"Security"},
+  {r:"AWS CloudHSM",         h:"Dedicated hardware security module for your keys",       d:"A physical HSM in AWS for when regulations require FIPS 140-2 Level 3 certification and you need sole custody of keys.",                                    c:"Security"},
+  {r:"AWS Directory Service",h:"Managed Microsoft Active Directory in the cloud",        d:"Run AD without running Windows Server DCs. Join EC2 instances to a domain, use Group Policy, enable SSO for AWS apps.",                                     c:"Security"},
+  {r:"AWS Firewall Manager", h:"Centrally deploy WAF and security group rules across all accounts",d:"Set a policy once in the management account; Firewall Manager pushes it to every account in the organization automatically.",                     c:"Security"},
+  {r:"AWS IAM Identity Center",h:"Single sign-on across all AWS accounts and SaaS apps",d:"One login portal for all your AWS accounts. Also integrates with Salesforce, Box, Office 365 via SAML. Replaces the old per-account IAM user model.",      c:"Security"},
+  {r:"AWS Artifact",         h:"Download AWS compliance reports (SOC, PCI, ISO...)",       d:"Self-service access to AWS's audit reports and certifications. Share them with your own auditors without waiting for AWS support.",                         c:"Security"},
+  {r:"AWS Audit Manager",    h:"Continuous evidence collection for compliance audits",   d:"Maps AWS resource configurations to compliance frameworks (GDPR, PCI DSS, CIS). Assembles audit-ready reports automatically.",                              c:"Security"},
+  {r:"Amazon Verified Permissions",h:"Fine-grained authorization engine for your own apps",d:"Externalizes your app's 'can user X do action Y on resource Z?' logic. Uses the Cedar policy language. Keeps auth logic out of app code.",              c:"Security"},
+  {r:"Amazon Security Lake", h:"Centralize all security logs in one place",              d:"Aggregates CloudTrail, VPC Flow Logs, Route 53, and third-party tool logs into a normalized OCSF format in your own S3 bucket.",                           c:"Security"},
+
+  // ── Management ──
+  {r:"AWS CloudFormation",   h:"Describe your whole infrastructure in a YAML file",      d:"Define EC2, RDS, Lambda, VPCs — everything — as code. Deploy the same stack to dev, staging, and prod identically. Rollback on failure.",                   c:"Mgmt"},
+  {r:"Amazon CloudWatch",    h:"Metrics, logs, and alarms for everything in AWS",        d:"Collects logs from every service, lets you create dashboards, set alarms on any metric, and trigger auto-scaling or Lambda reactions.",                      c:"Mgmt"},
+  {r:"AWS CloudTrail",       h:"A full audit log of every API call in your account",     d:"Who did what, when, from which IP. Essential for security investigations, compliance audits, and debugging strange config changes.",                         c:"Mgmt"},
+  {r:"AWS Config",           h:"Track every configuration change to every AWS resource", d:"Answers 'what did my security group look like 3 weeks ago?' Detects drift from compliant baselines. Triggers alerts on violations.",                        c:"Mgmt"},
+  {r:"AWS Auto Scaling",     h:"Automatically add or remove capacity based on demand",   d:"Coordinates scaling across EC2, ECS, DynamoDB, Aurora, and Lambda. Sets min/max/desired and lets demand drive the middle.",                                 c:"Mgmt"},
+  {r:"Amazon EC2 Auto Scaling",h:"Automatically scale EC2 instances to match demand",    d:"Specifically manages EC2 instance counts. Launches instances when demand rises, terminates them when it drops. Works with load balancer health checks.",      c:"Mgmt"},
+  {r:"AWS Control Tower",    h:"Set up a secure multi-account AWS environment with guardrails",d:"Creates the account structure, enables CloudTrail/Config everywhere, and enforces preventative controls. The right starting point for enterprises.",    c:"Mgmt"},
+  {r:"AWS Organizations",    h:"Manage many AWS accounts from one parent account",       d:"Group accounts into OUs, apply SCPs (permission boundaries), consolidate billing, and share resources between accounts.",                                    c:"Mgmt"},
+  {r:"AWS Systems Manager",  h:"Patch, configure, and run commands on fleets of servers",d:"No SSH keys, no bastion hosts. Run scripts on thousands of EC2 or on-prem servers at once. Patch Manager handles OS updates.",                             c:"Mgmt"},
+  {r:"AWS Trusted Advisor",  h:"Scans your account and flags waste, risks, and gaps",   d:"Checks for unused resources, open security groups, no MFA on root, over-provisioned instances. Like having an AWS expert review your account.",             c:"Mgmt"},
+  {r:"AWS Compute Optimizer",h:"ML-based recommendations to right-size your EC2 and Lambda",d:"Analyzes your actual utilization and recommends cheaper or more appropriate instance types. Often finds 20-40% savings.",                              c:"Mgmt"},
+  {r:"AWS Launch Wizard",    h:"Guided deployment for SAP, SQL Server, and other enterprise apps",d:"Answer a few questions; Launch Wizard provisions the right infrastructure. Generates a CloudFormation template you can reuse.",                   c:"Mgmt"},
+  {r:"AWS License Manager",  h:"Track and enforce software licenses across your fleet",  d:"Prevent license overages for Microsoft, Oracle, and SAP by setting hard limits on how many instances can use each license.",                               c:"Mgmt"},
+  {r:"AWS Service Catalog",  h:"IT-approved product catalog for self-service provisioning",d:"Admins define approved CloudFormation templates; developers deploy from the catalog without needing broad AWS permissions.",                              c:"Mgmt"},
+  {r:"Amazon Managed Grafana",h:"Managed Grafana dashboards — no server to run",        d:"Connect to CloudWatch, Prometheus, X-Ray, and dozens of other data sources. Share dashboards with SSO. AWS handles upgrades.",                              c:"Mgmt"},
+  {r:"Amazon Managed Prometheus",h:"Managed Prometheus metrics storage for Kubernetes", d:"Ingest metrics from your EKS clusters at scale without running Prometheus servers. Compatible with PromQL and existing exporters.",                         c:"Mgmt"},
+  {r:"AWS Well-Architected Tool",h:"Score your workload against AWS best practices",    d:"Answer questions about your architecture; get a report of risks across the six pillars: security, reliability, performance, cost, ops, sustainability.",     c:"Mgmt"},
+  {r:"AWS Health",           h:"Personalized alerts when AWS events affect your resources",d:"Notifies you before planned maintenance, when service events impact your specific accounts or regions. More targeted than the public status page.",       c:"Mgmt"},
+  {r:"AWS OpsWorks",         h:"Managed Chef and Puppet for server configuration",       d:"Use code to configure your servers. OpsWorks manages the Chef/Puppet control plane so you only write recipes/manifests.",                                   c:"Mgmt"},
+  {r:"AWS Proton",           h:"Platform engineering: standardize container and serverless deployments",d:"Platform teams define templates; developers self-serve deployments. Keeps infra consistent without a central ops bottleneck.",              c:"Mgmt"},
+  {r:"AWS User Notifications",h:"Central hub for notifications from all AWS services",  d:"Route CloudWatch alarms, Config findings, and Health events to email, SMS, Slack, or push — from one place, with one format.",                             c:"Mgmt"},
+  {r:"AWS Support",          h:"Technical support plans — Basic, Developer, Business, Enterprise",d:"Free Basic tier covers account and billing. Developer starts at $29/mo. Business adds 24/7 chat and 1-hour critical response. Enterprise provides a dedicated TAM and 15-minute critical SLA. CLF-C02 favorite.", c:"Mgmt"},
+
+  // ── Integration ──
+  {r:"AWS Step Functions",   h:"Visual state machine to orchestrate multi-step workflows",d:"Chain Lambdas, ECS tasks, and API calls into a workflow with branching, retries, and error handling. No glue code to maintain.",                         c:"Integration"},
+  {r:"Amazon SQS",           h:"Message queue — decouple producers from consumers",      d:"Producer drops a message; consumer picks it up when ready. If the consumer crashes, the message stays in the queue. FIFO mode for strict ordering.",        c:"Integration"},
+  {r:"Amazon SNS",           h:"Pub/sub — one message fans out to many subscribers",     d:"Publish once; SNS delivers to SQS queues, Lambda, HTTP endpoints, email, and SMS simultaneously. No polling needed.",                                      c:"Integration"},
+  {r:"Amazon EventBridge",   h:"Event bus — route events from AWS and SaaS to targets", d:"Catch events from 90+ AWS services and SaaS apps (Shopify, Zendesk, etc.); route them to Lambda, SQS, or Step Functions by pattern.",                     c:"Integration"},
+  {r:"Amazon MQ",            h:"Managed ActiveMQ or RabbitMQ — for existing message brokers",d:"Migrate your JMS or AMQP app to AWS without rewriting. No need to learn SQS. AWS manages the broker nodes.",                                         c:"Integration"},
+  {r:"Amazon AppFlow",       h:"No-code data transfers between SaaS apps and AWS",       d:"Move Salesforce records to S3, Slack messages to Redshift, ServiceNow data to DynamoDB — on a schedule or triggered by events.",                          c:"Integration"},
+  {r:"AWS B2B Data Interchange",h:"Transform EDI documents to JSON/XML automatically",  d:"Automates the processing of X12 EDI documents from suppliers and customers. Converts them into formats your modern apps understand.",                       c:"Integration"},
+
+  // ── Dev tools ──
+  {r:"AWS CodePipeline",     h:"CI/CD — automate build, test, deploy on every push",    d:"Connects GitHub/CodeCommit to CodeBuild to CodeDeploy into a pipeline. Visualizes every stage. Integrates with Jenkins and other tools.",                   c:"Dev tools"},
+  {r:"AWS CodeBuild",        h:"Managed build server — no Jenkins to maintain",          d:"Runs your build commands in a fresh container. Scales to many parallel builds. Integrates natively into CodePipeline.",                                    c:"Dev tools"},
+  {r:"AWS CodeDeploy",       h:"Deploy new code to EC2, Lambda, or on-prem servers",    d:"Rolling, blue/green, and canary deployments. Automatic rollback if health checks fail. Works with any language or framework.",                             c:"Dev tools"},
+  {r:"AWS CodeCommit",       h:"Private Git repository hosted on AWS",                   d:"Standard Git repo. Integrates with IAM so you control access without a separate service. Being gradually deprecated in favor of GitHub/CodeCatalyst.",     c:"Dev tools"},
+  {r:"AWS CodeArtifact",     h:"Private package repository for npm, PyPI, Maven, NuGet", d:"Cache public packages from npm/PyPI/Maven and publish private ones. IAM controls who can pull or publish.",                                               c:"Dev tools"},
+  {r:"Amazon CodeCatalyst",  h:"Unified dev environment — issues, code, CI/CD in one",  d:"AWS's answer to GitHub with integrated AWS deployments. Blueprints scaffold a full project with repo, pipeline, and dev environment.",                    c:"Dev tools"},
+  {r:"AWS Cloud9",           h:"Browser-based IDE with a terminal and AWS access",       d:"Full code editor + shell in your browser, pre-configured for AWS. No local install. Useful for quick edits or teaching.",                                  c:"Dev tools"},
+  {r:"AWS CloudShell",       h:"Instant terminal in the AWS Console, pre-authenticated", d:"Click the shell icon in the console, and you're in a bash session with the AWS CLI ready. No local setup, no credentials to configure.",                  c:"Dev tools"},
+  {r:"AWS X-Ray",            h:"Distributed tracing — see the path of every request",   d:"Instruments your app to trace requests across Lambda, EC2, and ECS. Generates a service map and highlights slow or failing segments.",                     c:"Dev tools"},
+  {r:"AWS Fault Injection Service",h:"Deliberately break things to find hidden weaknesses",d:"Run controlled chaos engineering experiments: inject CPU spikes, network latency, or instance terminations. Measures how your app responds.",           c:"Dev tools"},
+  {r:"Amazon Q Developer",   h:"AI coding assistant — in your IDE and the console",      d:"Writes code, explains errors, fixes vulnerabilities, and can perform multi-file refactors. Also upgrades Java versions automatically.",                    c:"Dev tools"},
+  {r:"Amazon Corretto",      h:"Free, production-ready OpenJDK distribution from AWS",  d:"AWS's own build of JDK with long-term support. Used internally at Amazon. Certified compatible with Java SE. Drop-in for other JDKs.",                    c:"Dev tools"},
+  {r:"AWS Infrastructure Composer",h:"Drag-and-drop IaC diagram builder",              d:"Draw your architecture visually; Infrastructure Composer generates CloudFormation or SAM templates. Good for prototyping and onboarding.",                  c:"Dev tools"},
+  {r:"AWS SAM",              h:"Simplified CloudFormation for serverless apps",          d:"Shorthand syntax to define Lambda, API Gateway, and DynamoDB stacks. `sam local invoke` lets you test Lambda locally before deploying.",                   c:"Dev tools"},
+  {r:"AWS CDK",              h:"Define AWS infrastructure in TypeScript, Python, Go...",  d:"Write real code instead of YAML. CDK synthesizes CloudFormation. Lets you use loops, functions, and type safety in your infrastructure.",                   c:"Dev tools"},
+  {r:"AWS SimSpace Weaver",  h:"Run massive spatial simulations across managed compute", d:"Distribute a simulation (traffic, crowd, logistics) across many EC2 instances with a managed framework. Think city-scale digital twins.",        c:"Dev tools"},
+
+  // ── Containers ──
+  {r:"Amazon ECR",           h:"Private Docker image registry",                          d:"Store and version your container images. IAM-integrated so only authorized pipelines can push. Scans images for CVEs automatically.",                      c:"Containers"},
+  {r:"Amazon ECS",           h:"Run Docker containers — AWS manages the orchestration", d:"Define tasks (containers), services (desired count), and clusters. AWS places containers on EC2 or Fargate and keeps the desired count running.",           c:"Containers"},
+  {r:"Amazon EKS",           h:"Managed Kubernetes — AWS runs the control plane",        d:"Fully certified Kubernetes. AWS patches and scales the control plane. You manage node groups (or use Fargate for fully serverless pods).",                  c:"Containers"},
+  {r:"AWS Copilot",          h:"CLI that simplifies building and deploying containers on ECS",d:"One command to init, build, and deploy containerized apps. Generates CloudFormation, handles load balancers, service discovery, and pipelines. Opinionated but fast.", c:"Containers"},
+  {r:"AWS App2Container",    h:"Containerize your existing .NET and Java apps automatically",d:"Analyzes your running app, packages it into a Docker image, and generates ECS/EKS deployment configs. Migration tool.",                              c:"Containers"},
+  {r:"Red Hat OpenShift on AWS",h:"Managed OpenShift (enterprise Kubernetes)",           d:"For teams standardized on OpenShift. AWS and Red Hat jointly operate the control plane. Same OpenShift APIs and tools.",                                   c:"Containers"},
+
+  // ── IoT ──
+  {r:"AWS IoT Core",         h:"Connect devices to AWS over MQTT — billions at scale",  d:"The central hub for IoT. Devices publish messages; rules route them to Lambda, S3, DynamoDB, or Kinesis in real time.",                                    c:"IoT"},
+  {r:"AWS IoT Greengrass",   h:"Run Lambda and ML models on the device, offline",        d:"An AWS runtime that runs on your gateway or device. Processes data locally when there's no internet, syncs to cloud when connected.",                     c:"IoT"},
+  {r:"AWS IoT Device Management",h:"Register, organize, and update millions of devices", d:"Bulk-register devices, organize them into groups, monitor connectivity, and push OTA firmware updates.",                                                   c:"IoT"},
+  {r:"AWS IoT Device Defender",h:"Security auditing and anomaly detection for device fleets",d:"Audits device configurations against best practices. Alerts when a device talks to unexpected IPs or sends unusual traffic volumes.",                 c:"IoT"},
+  {r:"AWS IoT SiteWise",     h:"Collect and model industrial equipment data",            d:"Connects to OPC-UA, Modbus, and other industrial protocols. Structures sensor data as asset hierarchies. Computes OEE and other KPIs.",                   c:"IoT"},
+  {r:"AWS IoT TwinMaker",    h:"Build digital twins of buildings and factories",         d:"Links real-time sensor data to a 3D model of your physical space. Visualize operations, run simulations, and diagnose problems remotely.",                c:"IoT"},
+  {r:"AWS IoT FleetWise",    h:"Collect and analyze vehicle telemetry at scale",         d:"Rules-based data collection from vehicle CAN buses. Send only interesting signals to the cloud instead of all data continuously.",                        c:"IoT"},
+  {r:"AWS IoT ExpressLink",  h:"Hardware modules that add secure AWS connectivity to any device",d:"Partner-certified Wi-Fi/cellular modules with AWS credentials pre-provisioned. Attach to your MCU; it handles TLS and MQTT for you.",            c:"IoT"},
+  {r:"AWS IoT Events",       h:"Detect event patterns across thousands of devices",      d:"Define state machines with if/then/else rules. IoT Events monitors your sensor streams and triggers alarms or Lambda when patterns match.",               c:"IoT"},
+  {r:"AWS IoT Analytics",    h:"Time-series analytics pipeline for IoT data",            d:"Cleans, enriches, and stores IoT messages. Runs SQL queries on stored data. Built-in Jupyter notebooks for ad hoc analysis.",                            c:"IoT"},
+  {r:"FreeRTOS",             h:"AWS-maintained OS for microcontrollers with cloud connectivity",d:"Extends the popular FreeRTOS kernel with libraries for TLS, MQTT, and OTA updates. The standard way to connect tiny MCUs to IoT Core.",          c:"IoT"},
+  {r:"AWS IoT Button",       h:"A Wi-Fi button that triggers any AWS action",            d:"Developer toy. Click once, double-click, or long-press. Configure each action in Lambda. Used for demos, dashboards, and prototypes.",                    c:"IoT"},
+
+  // ── Migration ──
+  {r:"AWS Application Migration Service",h:"Lift-and-shift servers to AWS with minimal downtime",d:"Continuously replicates your on-prem servers to AWS. When ready, cut over. Source stays live until you're confident.",                        c:"Migration"},
+  {r:"AWS Database Migration Service",h:"Migrate databases to AWS while they stay online",d:"Supports same-engine (MySQL to RDS MySQL) and cross-engine (Oracle to Aurora) migrations. Source DB keeps serving traffic throughout.",                      c:"Migration"},
+  {r:"AWS DataSync",         h:"Fast automated file transfers from on-prem to S3 or EFS",d:"10x faster than open-source tools. Handles checksums, bandwidth throttling, and scheduling. No custom scripting needed.",                               c:"Migration"},
+  {r:"AWS Snow Family",      h:"Physical devices to move massive data when the internet is too slow",d:"Snowball (8 TB portable), Snowball Edge (80 TB + compute), Snowmobile (100 PB truck). Load it, ship it, AWS ingests it.",                  c:"Migration"},
+  {r:"AWS Transfer Family",  h:"SFTP / FTP / FTPS endpoint that stores files directly in S3",d:"Drop-in replacement for legacy FTP servers. Your partners connect with the same SFTP clients; files land in S3 automatically.",                    c:"Migration"},
+  {r:"AWS Migration Hub",    h:"Single view of progress across all your migrations",     d:"Aggregates status from Application Migration Service, DMS, and partner tools. See which servers are migrated, in progress, or stuck.",                  c:"Migration"},
+  {r:"AWS Application Discovery Service",h:"Map your on-prem servers and dependencies before migrating",d:"Discovers what's running on each server, measures utilization, and maps which servers talk to which. Feeds into Migration Hub.",       c:"Migration"},
+  {r:"AWS Mainframe Modernization",h:"Migrate COBOL/PL1 mainframe apps to AWS",          d:"Automates refactoring of mainframe code and provides a managed runtime environment. Escape hardware licensing and staffing costs.",                     c:"Migration"},
+
+  // ── Media ──
+  {r:"Amazon Elastic Transcoder",h:"Convert media files to formats for any screen",     d:"Old-school media transcoding service. Upload a video; get back MP4/HLS/etc. For new projects prefer MediaConvert.",                                     c:"Media"},
+  {r:"AWS Elemental MediaConvert",h:"Broadcast-grade video-on-demand transcoding",       d:"Converts source files to adaptive bitrate streams (HLS, DASH) with captions, DRM, and quality controls. For publishers and OTT.",                      c:"Media"},
+  {r:"AWS Elemental MediaLive",h:"Encode live video streams for broadcast and streaming",d:"Processes live video feeds into ABR streams in real time. Used for live events, 24/7 channels, and news broadcasts.",                                  c:"Media"},
+  {r:"AWS Elemental MediaPackage",h:"Prepare and protect live/VOD video for delivery",  d:"Packages your encoded streams into HLS/DASH/CMAF, applies DRM, and enables DVR features like pause and rewind.",                                       c:"Media"},
+  {r:"AWS Elemental MediaStore",h:"Low-latency origin storage built for live video",     d:"Stores live video segments so CDNs can fetch them with consistent sub-second latency. Not a general-purpose S3 alternative.",                          c:"Media"},
+  {r:"AWS Elemental MediaTailor",h:"Personalized ad insertion into video streams",       d:"Replaces generic ad breaks with ads targeted to each viewer without breaking playback quality or introducing buffering.",                               c:"Media"},
+  {r:"AWS Elemental MediaConnect",h:"Reliable live video transport over IP",            d:"Replaces expensive satellite or fiber contribution links. Sends high-quality video between locations and into AWS with built-in redundancy.",            c:"Media"},
+  {r:"Amazon Interactive Video Service",h:"Managed live streaming with less than 5s latency",    d:"RTMPS in, ultra-low-latency player SDK out. Add interactive overlays synchronized with the stream using timed metadata.",                             c:"Media"},
+  {r:"Amazon Nimble Studio",h:"Cloud workstations for VFX and animation teams",         d:"Artists get a GPU workstation in a browser. Studios get elastic rendering and shared high-speed storage. No physical render farm needed.",             c:"Media"},
+
+  // ── Business apps ──
+  {r:"Amazon Connect",       h:"Cloud contact center — build a call center in clicks", d:"Self-service IVR designer, agent desktop, and built-in AI for call transcription, sentiment analysis, and next-best-action suggestions.",              c:"Business apps"},
+  {r:"Amazon Chime",         h:"Video meetings, calls, and chat from AWS",              d:"Web conferencing with an SDK for embedding real-time video/audio into your own apps. Less common now that most teams use Zoom or Teams.",              c:"Business apps"},
+  {r:"Amazon Pinpoint",      h:"Targeted messaging campaigns — email, SMS, push",       d:"Segment your users, schedule campaigns, and track opens/clicks. Also handles transactional messages like OTP codes and order confirmations.",         c:"Business apps"},
+  {r:"Amazon SES",           h:"Send transactional or bulk email at low cost",          d:"SMTP or API. High deliverability, dedicated IPs, bounce/complaint tracking. The go-to for apps that send email at scale.",                            c:"Business apps"},
+  {r:"Amazon WorkMail",      h:"Managed business email and calendar compatible with Outlook",d:"Exchange-compatible managed email. Users keep using Outlook, iOS Mail, etc. AWS handles servers, backups, and spam filtering.",                  c:"Business apps"},
+  {r:"AWS AppFabric",        h:"Normalize security logs across your SaaS apps into one feed",d:"Connects 50+ SaaS apps (Okta, Slack, Zoom, Salesforce). Normalizes their audit logs into OCSF so your SIEM gets one consistent format.",     c:"Business apps"},
+  {r:"Amazon WorkDocs",      h:"Managed file storage and collaboration (mostly deprecated)",d:"Secure document sharing with feedback and version history. AWS has stopped new sign-ups — migrate to SharePoint or Google Drive.",              c:"Business apps"},
+
+  // ── End-user ──
+  {r:"Amazon WorkSpaces",    h:"Managed cloud desktop — Windows or Linux in a browser",d:"Provision virtual desktops in minutes. Employees access them from anywhere. Pay monthly or hourly per seat.",                                        c:"End-user"},
+  {r:"Amazon WorkSpaces Applications",h:"Stream desktop apps to any device without a full VDI",d:"Users get the app in their browser; compute runs in AWS. No thick client, no VPN. Scales to global teams instantly.",                       c:"End-user"},
+  {r:"Amazon WorkSpaces Web",h:"Secure browser for internal web apps — no endpoint risk",d:"A managed browser that runs in AWS. Users access internal sites; no data ever touches the end device.",                                          c:"End-user"},
+  {r:"Amazon WorkSpaces Thin Client",h:"A $200 device that boots into a WorkSpaces session",d:"Compact box, plug in a monitor and keyboard. No local storage, no apps — just a secure gateway to a cloud desktop.",                         c:"End-user"},
+
+  // ── Front-end ──
+  {r:"AWS Amplify",          h:"Build and deploy full-stack web and mobile apps on AWS",d:"Connects your React/Next/Vue frontend to a managed backend (auth, API, database, storage) and deploys to a global CDN with one command.",          c:"Front-end"},
+  {r:"AWS AppSync",          h:"Managed GraphQL API with real-time subscriptions",       d:"Define a GraphQL schema; AppSync auto-generates resolvers that connect to DynamoDB, Lambda, or RDS. Subscriptions push live data to clients.",    c:"Front-end"},
+  {r:"AWS Device Farm",      h:"Test your app on real physical phones and tablets",      d:"Run your Appium or XCUITest suite on hundreds of real iOS and Android devices in AWS. Watch video recordings of failures.",                       c:"Front-end"},
+  {r:"Amazon Location Service",h:"Add maps, geocoding, and tracking to your app",       d:"Powered by Esri and HERE. Add map tiles, search, routing, and geofencing without routing user location data to Google or MapBox.",               c:"Front-end"},
+
+  // ── Game ──
+  {r:"Amazon GameLift",      h:"Managed dedicated game server hosting with matchmaking",d:"Handles server fleet scaling, player session management, and matchmaking. Reduces cold start time for game sessions.",                            c:"Game"},
+  {r:"Amazon GameLift Anywhere",h:"Run GameLift matchmaking against your own servers",  d:"Use GameLift's matchmaking and session management logic while hosting game servers on your own hardware or other clouds.",                        c:"Game"},
+
+  // ── Cost ──
+  {r:"AWS Cost Explorer",    h:"Visualize and forecast your AWS spending",              d:"Interactive charts of spend by service, account, region, or tag. Forecasts next month's bill. Finds Reserved Instance savings opportunities.",    c:"Cost"},
+  {r:"AWS Budgets",          h:"Set alerts when spending exceeds thresholds",            d:"Configure alerts at any budget level — by dollar amount, percentage, or forecast. Send to email, SNS, or Slack.",                               c:"Cost"},
+  {r:"AWS Cost and Usage Report",h:"Raw billing data in S3 — every line item, every hour",d:"The most detailed billing data AWS produces. Load into Athena or Redshift to build custom cost analytics.",                                    c:"Cost"},
+  {r:"AWS Savings Plans",    h:"Commit to a spend rate and save up to 66%",             d:"More flexible than Reserved Instances — applies across EC2, Fargate, and Lambda automatically. Compute Savings Plans follow you as you change instance types.", c:"Cost"},
+  {r:"AWS Billing Conductor",h:"Create custom billing views for internal teams or customers",d:"Build billing groups with custom rates and credits. Show teams what they 'spend' without changing what AWS actually charges.",             c:"Cost"},
+  {r:"AWS Pricing Calculator",h:"Estimate AWS costs before you build",                d:"Model your workload with instance types, storage, and data transfer to get a monthly cost estimate. Essential for CLF-C02 cost questions. No AWS account needed.", c:"Cost"},
+  {r:"AWS Free Tier",        h:"12-month free tier plus always-free services for new accounts",d:"Three types: 12-month free (750 hrs EC2 t2.micro), Always Free (1M Lambda requests/mo), and trials (short-term access to premium features). CLF-C02 favorite.", c:"Cost"},
+
+  // ── Blockchain ──
+  {r:"Amazon Managed Blockchain",h:"Create and run blockchain networks on AWS",         d:"Managed Hyperledger Fabric or Ethereum nodes. Eliminates the need to set up and operate blockchain infrastructure yourself.",                    c:"Blockchain"},
+
+  // ── Quantum ──
+  {r:"Amazon Braket",        h:"Experiment with quantum computing algorithms",           d:"Write quantum circuits and run them on simulators or real quantum hardware (IonQ, Rigetti). No quantum physics PhD required to start.",          c:"Quantum"},
+
+  // ── Satellite ──
+  {r:"AWS Ground Station",   h:"Communicate with satellites using AWS-managed antennas",d:"Downlink satellite data directly into S3 or Kinesis. Pay per minute of antenna contact. No ground station infrastructure to build.",            c:"Satellite"},
+];
+
+// Dedup
+const deduped = [];
+const seen = new Set();
+S.forEach(s => { const k = s.r+s.c; if(!seen.has(k)){seen.add(k);deduped.push(s);} });
+
+const allCats = ["All", ...Object.keys(CAT)];
+let active = "All";
+let isDark = localStorage.getItem('dark') === 'true';
+
+function applyDark(){
+  document.documentElement.classList.toggle('dark', isDark);
+}
+applyDark();
+
+function toggleDark(){
+  isDark = !isDark;
+  localStorage.setItem('dark', isDark);
+  applyDark();
+  render();
+}
+
+function clearSearch(){
+  document.getElementById('q').value = '';
+  document.getElementById('clearBtn').classList.add('hidden');
+  render();
+}
+
+function render(){
+  const q = document.getElementById("q").value.toLowerCase().trim();
+  const clearBtn = document.getElementById("clearBtn");
+  clearBtn.classList.toggle('hidden', !q);
+
+  const words = q ? q.split(/\s+/) : [];
+  const filtered = deduped.filter(s => {
+    if(active !== "All" && s.c !== active) return false;
+    if(!words.length) return true;
+    const txt = (s.r+" "+s.h+" "+s.d+" "+s.c).toLowerCase();
+    return words.every(w => txt.includes(w));
+  });
+  document.getElementById("meta").textContent = filtered.length + " of " + deduped.length + " services";
+  const g = document.getElementById("grid");
+  if(!filtered.length){
+    g.innerHTML = '<div class="col-span-full py-16 text-center"><div class="text-slate-400 dark:text-slate-500 text-4xl mb-3">&#128270;</div><p class="text-slate-500 dark:text-slate-400 text-sm">No services match your search. Try a different keyword.</p></div>';
+    return;
+  }
+  g.innerHTML = filtered.map(s => {
+    const col = CAT[s.c] || {bg:"#E1F5EE",tc:"#085041",dkbg:"#042F2E",dktc:"#5EEAD4"};
+    const badgeBg = isDark ? (col.dkbg||col.bg) : col.bg;
+    const badgeTc = isDark ? (col.dktc||col.tc) : col.tc;
+    return `<div class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm transition-all duration-150">
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <div class="flex-1 min-w-0">
+          <div class="mono text-[11px] text-slate-500 dark:text-slate-400 truncate mb-0.5">${s.r}</div>
+          <div class="text-sm font-medium text-slate-900 dark:text-white leading-snug">${s.h}</div>
+        </div>
+        <span class="shrink-0 mt-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap" style="background:${badgeBg};color:${badgeTc}">${s.c}</span>
+      </div>
+      <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${s.d}</p>
+    </div>`;
+  }).join("");
+}
+
+function buildPills(){
+  document.getElementById("pills").innerHTML = allCats.map(c => {
+    const isActive = c === active;
+    const col = CAT[c];
+    const base = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-all duration-150 whitespace-nowrap shrink-0 select-none";
+    if(isActive && c !== "All" && col){
+      return `<span class="${base}" style="background:${isDark?col.dkbg:col.bg};color:${isDark?col.dktc:col.tc}" onclick="setA('${c}')">${c}</span>`;
+    }
+    const activeClass = isActive
+      ? "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700"
+      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700";
+    return `<span class="${base} border ${activeClass}" onclick="setA('${c}')">${c}</span>`;
+  }).join("");
+}
+
+function setA(c){ active=c; buildPills(); render(); }
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if(e.key === '/' && document.activeElement !== document.getElementById('q')){
+    e.preventDefault();
+    document.getElementById('q').focus();
+  }
+  if(e.key === 'Escape'){
+    document.getElementById('q').blur();
+    clearSearch();
+  }
+});
+
+buildPills();
+render();
+</script>
+
+</body>
+</html>
