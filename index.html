@@ -51,16 +51,48 @@
         </button>
       </div>
     </div>
+    <!-- Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-1">
+      <div id="tabs" class="flex gap-0 border-b border-slate-200 dark:border-slate-800">
+        <button onclick="setTab('services')" id="tab-services" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Services</button>
+        <button onclick="setTab('matrix')" id="tab-matrix" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Matrix</button>
+        <button onclick="setTab('acronyms')" id="tab-acronyms" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Acronyms</button>
+      </div>
+    </div>
     <!-- Category Pills -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-3">
+    <div id="pills-row" class="max-w-7xl mx-auto px-4 sm:px-6 pb-3 pt-2">
       <div id="pills" class="pill-scroll flex gap-1.5 overflow-x-auto"></div>
     </div>
   </header>
 
-  <!-- Card Grid -->
+  <!-- Card Grid / Matrix -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
     <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
   </main>
+
+  <!-- Acronyms Section -->
+  <section id="acronym-section" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 hidden">
+    <div class="mb-4">
+      <div class="relative max-w-sm">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <input type="text" id="aq" placeholder="Search acronyms..." oninput="renderAcronyms()" class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-shadow">
+      </div>
+    </div>
+    <div id="acronym-table-wrap" class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-slate-100 dark:bg-slate-800/80 text-left">
+            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 w-28 whitespace-nowrap">Acronym</th>
+            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 w-56">Full Name</th>
+            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300">Description</th>
+          </tr>
+        </thead>
+        <tbody id="acronym-body"></tbody>
+      </table>
+    </div>
+    <p id="acronym-empty" class="hidden py-12 text-center text-slate-400 dark:text-slate-500 text-sm">No acronyms match your search.</p>
+    <p id="acronym-count" class="mt-2 text-right text-xs text-slate-400 dark:text-slate-500"></p>
+  </section>
 
 <script>
 const CAT = {
@@ -375,6 +407,7 @@ S.forEach(s => { const k = s.r+s.c; if(!seen.has(k)){seen.add(k);deduped.push(s)
 const allCats = ["All", ...Object.keys(CAT)];
 let active = "All";
 let isDark = localStorage.getItem('dark') === 'true';
+let currentTab = 'services';
 
 function applyDark(){
   document.documentElement.classList.toggle('dark', isDark);
@@ -394,6 +427,43 @@ function clearSearch(){
   render();
 }
 
+function setTab(t){
+  currentTab = t;
+  // Update tab button styles
+  ['services','matrix','acronyms'].forEach(id => {
+    const btn = document.getElementById('tab-'+id);
+    if(id === t){
+      btn.className = 'tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors border-amber-500 text-amber-600 dark:text-amber-400';
+    } else {
+      btn.className = 'tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
+    }
+  });
+
+  // Show/hide pills row and main grid vs acronym section
+  const pillsRow = document.getElementById('pills-row');
+  const mainEl = document.querySelector('main');
+  const acronymSection = document.getElementById('acronym-section');
+
+  if(t === 'acronyms'){
+    pillsRow.classList.add('hidden');
+    mainEl.classList.add('hidden');
+    acronymSection.classList.remove('hidden');
+    renderAcronyms();
+  } else {
+    pillsRow.classList.remove('hidden');
+    mainEl.classList.remove('hidden');
+    acronymSection.classList.add('hidden');
+    // Adjust grid class based on tab
+    const g = document.getElementById('grid');
+    if(t === 'matrix'){
+      g.className = '';
+    } else {
+      g.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3';
+    }
+    render();
+  }
+}
+
 function render(){
   const q = document.getElementById("q").value.toLowerCase().trim();
   const clearBtn = document.getElementById("clearBtn");
@@ -408,6 +478,14 @@ function render(){
   });
   document.getElementById("meta").textContent = filtered.length + " of " + deduped.length + " services";
   const g = document.getElementById("grid");
+
+  if(currentTab === 'matrix'){
+    renderMatrix(filtered, g);
+    return;
+  }
+
+  // Default: card grid
+  g.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3';
   if(!filtered.length){
     g.innerHTML = '<div class="col-span-full py-16 text-center"><div class="text-slate-400 dark:text-slate-500 text-4xl mb-3">&#128270;</div><p class="text-slate-500 dark:text-slate-400 text-sm">No services match your search. Try a different keyword.</p></div>';
     return;
@@ -431,6 +509,47 @@ function render(){
   }).join("");
 }
 
+function renderMatrix(filtered, g){
+  g.className = 'overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800';
+  if(!filtered.length){
+    g.innerHTML = '<div class="py-16 text-center"><div class="text-slate-400 dark:text-slate-500 text-4xl mb-3">&#128270;</div><p class="text-slate-500 dark:text-slate-400 text-sm">No services match your search.</p></div>';
+    return;
+  }
+  g.innerHTML = `<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead class="sticky top-0 z-10">
+      <tr class="bg-slate-100 dark:bg-slate-800 text-left">
+        <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">AWS Service</th>
+        <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Category</th>
+        <th class="px-4 py-2.5 text-xs font-semibold text-blue-500 dark:text-blue-400 whitespace-nowrap">GCP Equivalent</th>
+        <th class="px-4 py-2.5 text-xs font-semibold text-cyan-500 dark:text-cyan-400 whitespace-nowrap">Azure Equivalent</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${filtered.map((s, i) => {
+        const col = CAT[s.c] || {bg:"#E1F5EE",tc:"#085041",dkbg:"#042F2E",dktc:"#5EEAD4"};
+        const badgeBg = isDark ? (col.dkbg||col.bg) : col.bg;
+        const badgeTc = isDark ? (col.dktc||col.tc) : col.tc;
+        const rowCls = i % 2 === 0
+          ? 'bg-white dark:bg-slate-900'
+          : 'bg-slate-50/60 dark:bg-slate-800/40';
+        return `<tr class="${rowCls} border-t border-slate-100 dark:border-slate-800 hover:bg-amber-50/40 dark:hover:bg-amber-900/10 transition-colors">
+          <td class="px-4 py-2.5 align-top">
+            <div class="mono text-[11px] text-slate-500 dark:text-slate-400">${s.r}</div>
+            <div class="text-xs text-slate-700 dark:text-slate-300 leading-snug mt-0.5">${s.h}</div>
+          </td>
+          <td class="px-4 py-2.5 align-top whitespace-nowrap">
+            <span class="text-[10px] font-medium px-2 py-0.5 rounded-full" style="background:${badgeBg};color:${badgeTc}">${s.c}</span>
+          </td>
+          <td class="px-4 py-2.5 align-top text-xs text-slate-600 dark:text-slate-400">${s.gcp || '<span class="text-slate-300 dark:text-slate-600">&mdash;</span>'}</td>
+          <td class="px-4 py-2.5 align-top text-xs text-slate-600 dark:text-slate-400">${s.az || '<span class="text-slate-300 dark:text-slate-600">&mdash;</span>'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+  </div>`;
+}
+
 function buildPills(){
   document.getElementById("pills").innerHTML = allCats.map(c => {
     const isActive = c === active;
@@ -448,20 +567,154 @@ function buildPills(){
 
 function setA(c){ active=c; buildPills(); render(); }
 
+// ── Acronyms ──
+const ACRONYMS = [
+  {a:"ABAC",      f:"Attribute-Based Access Control",                  d:"Permissions based on resource/user attributes"},
+  {a:"ACID",      f:"Atomicity, Consistency, Isolation, Durability",   d:"Properties of reliable DB transactions"},
+  {a:"ACL",       f:"Access Control List",                             d:"Rules applied to resources to allow/deny traffic"},
+  {a:"ALB",       f:"Application Load Balancer",                       d:"Layer 7 load balancer"},
+  {a:"API",       f:"Application Programming Interface",               d:"Contract for how systems communicate"},
+  {a:"ARN",       f:"Amazon Resource Name",                            d:"Unique identifier for AWS resources"},
+  {a:"AZ",        f:"Availability Zone",                               d:"Isolated data center location within a region"},
+  {a:"BGP",       f:"Border Gateway Protocol",                         d:"Routing protocol used by Direct Connect and VPNs"},
+  {a:"CAPEX",     f:"Capital Expenditure",                             d:"Upfront spend on physical assets"},
+  {a:"CAP",       f:"Consistency, Availability, Partition tolerance",  d:"Distributed systems tradeoff theorem"},
+  {a:"CDK",       f:"Cloud Development Kit",                           d:"Define AWS infra using familiar programming languages"},
+  {a:"CDN",       f:"Content Delivery Network",                        d:"Distributed servers that cache content close to users"},
+  {a:"CFN",       f:"CloudFormation",                                  d:"AWS infrastructure-as-code service"},
+  {a:"CIDR",      f:"Classless Inter-Domain Routing",                  d:"IP address allocation method (e.g. 10.0.0.0/16)"},
+  {a:"CI/CD",     f:"Continuous Integration/Continuous Deployment",    d:"Automated build, test, deploy pipelines"},
+  {a:"CLI",       f:"Command Line Interface",                          d:"Text-based tool to interact with services"},
+  {a:"CORS",      f:"Cross-Origin Resource Sharing",                   d:"Browser security mechanism for cross-domain requests"},
+  {a:"CQRS",      f:"Command Query Responsibility Segregation",        d:"Separate read/write models pattern"},
+  {a:"CSPM",      f:"Cloud Security Posture Management",               d:"Tools to detect cloud misconfigurations"},
+  {a:"CUR",       f:"Cost and Usage Report",                           d:"Detailed AWS billing data export"},
+  {a:"CVE",       f:"Common Vulnerabilities and Exposures",            d:"Public catalog of security flaws"},
+  {a:"DDoS",      f:"Distributed Denial of Service",                   d:"Attack flooding a service with traffic"},
+  {a:"DNS",       f:"Domain Name System",                              d:"Translates domain names to IP addresses"},
+  {a:"DR",        f:"Disaster Recovery",                               d:"Strategy for restoring systems after major failure"},
+  {a:"EBS",       f:"Elastic Block Store",                             d:"Block storage volumes for EC2"},
+  {a:"EC2",       f:"Elastic Compute Cloud",                           d:"Virtual servers in the cloud"},
+  {a:"ECR",       f:"Elastic Container Registry",                      d:"Docker image registry"},
+  {a:"ECS",       f:"Elastic Container Service",                       d:"AWS container orchestration"},
+  {a:"EFS",       f:"Elastic File System",                             d:"Managed NFS for Linux workloads"},
+  {a:"EKS",       f:"Elastic Kubernetes Service",                      d:"Managed Kubernetes on AWS"},
+  {a:"ELB",       f:"Elastic Load Balancer",                           d:"AWS load balancing service family"},
+  {a:"ELT",       f:"Extract, Load, Transform",                        d:"Variant where transform happens after loading"},
+  {a:"ETL",       f:"Extract, Transform, Load",                        d:"Data pipeline process for warehousing"},
+  {a:"FinOps",    f:"Financial Operations",                            d:"Practice of managing cloud costs"},
+  {a:"GDPR",      f:"General Data Protection Regulation",             d:"EU data privacy law"},
+  {a:"GraphQL",   f:"Graph Query Language",                            d:"API query language that fetches exactly what you ask for"},
+  {a:"gRPC",      f:"Google Remote Procedure Call",                    d:"High-performance binary protocol for service communication"},
+  {a:"HA",        f:"High Availability",                               d:"Design ensuring minimal downtime"},
+  {a:"HIPAA",     f:"Health Insurance Portability and Accountability Act", d:"US healthcare data law"},
+  {a:"HSM",       f:"Hardware Security Module",                        d:"Physical device for cryptographic operations"},
+  {a:"IaC",       f:"Infrastructure as Code",                          d:"Managing infra through config files instead of manual steps"},
+  {a:"IAM",       f:"Identity and Access Management",                  d:"Controls who can do what on cloud resources"},
+  {a:"IOPS",      f:"Input/Output Operations Per Second",              d:"Disk performance metric"},
+  {a:"JWT",       f:"JSON Web Token",                                  d:"Compact token format for auth claims"},
+  {a:"KMS",       f:"Key Management Service",                          d:"Manages encryption keys"},
+  {a:"LLM",       f:"Large Language Model",                            d:"AI model trained on vast text data (e.g. GPT, Claude)"},
+  {a:"ML",        f:"Machine Learning",                                d:"Systems that learn from data"},
+  {a:"MTBF",      f:"Mean Time Between Failures",                      d:"Average uptime between failures"},
+  {a:"MTTR",      f:"Mean Time To Repair",                             d:"Average time to restore a failed system"},
+  {a:"MFA",       f:"Multi-Factor Authentication",                     d:"Requires 2+ verification methods"},
+  {a:"NAT",       f:"Network Address Translation",                     d:"Maps private IPs to public for outbound traffic"},
+  {a:"NLB",       f:"Network Load Balancer",                           d:"Layer 4 load balancer"},
+  {a:"NLP",       f:"Natural Language Processing",                     d:"AI for understanding/generating human language"},
+  {a:"OIDC",      f:"OpenID Connect",                                  d:"Identity layer on top of OAuth 2.0"},
+  {a:"OLAP",      f:"Online Analytical Processing",                    d:"Optimized for complex queries and analytics"},
+  {a:"OLTP",      f:"Online Transaction Processing",                   d:"Optimized for fast transactional reads/writes"},
+  {a:"OPEX",      f:"Operating Expenditure",                           d:"Ongoing operational costs (cloud favors this)"},
+  {a:"OU",        f:"Organizational Unit",                             d:"Group of AWS accounts within Organizations"},
+  {a:"PCI DSS",   f:"Payment Card Industry Data Security Standard",   d:"Card payment security standard"},
+  {a:"PII",       f:"Personally Identifiable Information",             d:"Data that can identify an individual"},
+  {a:"PoP",       f:"Point of Presence",                               d:"CDN edge location close to end users"},
+  {a:"RAG",       f:"Retrieval-Augmented Generation",                  d:"Pattern combining LLMs with external knowledge retrieval"},
+  {a:"RBAC",      f:"Role-Based Access Control",                       d:"Permissions based on user roles"},
+  {a:"RDS",       f:"Relational Database Service",                     d:"Managed relational databases"},
+  {a:"REST",      f:"Representational State Transfer",                 d:"HTTP-based API architectural style"},
+  {a:"RI",        f:"Reserved Instance",                               d:"Pre-paid EC2 commitment for discounts"},
+  {a:"RPO",       f:"Recovery Point Objective",                        d:"Max acceptable data loss (measured in time)"},
+  {a:"RTO",       f:"Recovery Time Objective",                         d:"Max acceptable downtime before recovery"},
+  {a:"S3",        f:"Simple Storage Service",                          d:"Object storage"},
+  {a:"SAML",      f:"Security Assertion Markup Language",              d:"Standard for SSO federation"},
+  {a:"SCP",       f:"Service Control Policy",                          d:"Org-level permission guardrails in AWS Organizations"},
+  {a:"SDK",       f:"Software Development Kit",                        d:"Libraries for interacting with a service programmatically"},
+  {a:"SES",       f:"Simple Email Service",                            d:"Managed email sending"},
+  {a:"SIEM",      f:"Security Information and Event Management",       d:"Aggregates and analyzes security logs"},
+  {a:"SLA",       f:"Service Level Agreement",                         d:"Contractual uptime/performance commitment"},
+  {a:"SLI",       f:"Service Level Indicator",                         d:"Metric used to measure a service's behavior"},
+  {a:"SLO",       f:"Service Level Objective",                         d:"Internal target for a service metric"},
+  {a:"SNS",       f:"Simple Notification Service",                     d:"Pub/sub messaging"},
+  {a:"SOC 2",     f:"Service Organization Control 2",                  d:"Security/availability audit framework"},
+  {a:"SP",        f:"Savings Plan",                                    d:"Flexible commitment-based AWS discount model"},
+  {a:"SQS",       f:"Simple Queue Service",                            d:"Managed message queue"},
+  {a:"SRE",       f:"Site Reliability Engineering",                    d:"Applying software engineering to operations"},
+  {a:"SSO",       f:"Single Sign-On",                                  d:"One login grants access to multiple systems"},
+  {a:"TCO",       f:"Total Cost of Ownership",                         d:"Full cost including indirect and direct expenses"},
+  {a:"TLS",       f:"Transport Layer Security",                        d:"Encryption protocol (successor to SSL)"},
+  {a:"TTL",       f:"Time to Live",                                    d:"How long a record/cache entry remains valid"},
+  {a:"VPC",       f:"Virtual Private Cloud",                           d:"Isolated virtual network in the cloud"},
+  {a:"VPN",       f:"Virtual Private Network",                         d:"Encrypted tunnel over public internet"},
+  {a:"WAF",       f:"Web Application Firewall",                        d:"Filters malicious HTTP traffic"},
+  {a:"Zero Trust",f:"Zero Trust Security",                             d:"Security model: never trust, always verify, even inside the network"},
+].sort((a, b) => a.a.localeCompare(b.a));
+
+function renderAcronyms(){
+  const q = (document.getElementById('aq').value || '').toLowerCase().trim();
+  const words = q ? q.split(/\s+/) : [];
+  const filtered = ACRONYMS.filter(item => {
+    if(!words.length) return true;
+    const txt = (item.a + ' ' + item.f + ' ' + item.d).toLowerCase();
+    return words.every(w => txt.includes(w));
+  });
+  const tbody = document.getElementById('acronym-body');
+  const empty = document.getElementById('acronym-empty');
+  const wrap  = document.getElementById('acronym-table-wrap');
+  const count = document.getElementById('acronym-count');
+  count.textContent = filtered.length + ' of ' + ACRONYMS.length + ' acronyms';
+  if(!filtered.length){
+    tbody.innerHTML = '';
+    wrap.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  wrap.classList.remove('hidden');
+  empty.classList.add('hidden');
+  tbody.innerHTML = filtered.map((item, i) => {
+    const rowCls = i % 2 === 0
+      ? 'bg-white dark:bg-slate-900'
+      : 'bg-slate-50/60 dark:bg-slate-800/40';
+    return `<tr class="${rowCls} border-t border-slate-100 dark:border-slate-800 hover:bg-amber-50/40 dark:hover:bg-amber-900/10 transition-colors">
+      <td class="px-4 py-2.5 align-top">
+        <span class="mono font-semibold text-amber-600 dark:text-amber-400 text-xs">${item.a}</span>
+      </td>
+      <td class="px-4 py-2.5 align-top text-xs text-slate-700 dark:text-slate-300">${item.f}</td>
+      <td class="px-4 py-2.5 align-top text-xs text-slate-500 dark:text-slate-400">${item.d}</td>
+    </tr>`;
+  }).join('');
+}
+
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if(e.key === '/' && document.activeElement !== document.getElementById('q')){
+  if(e.key === '/' && document.activeElement !== document.getElementById('q') && document.activeElement !== document.getElementById('aq')){
     e.preventDefault();
-    document.getElementById('q').focus();
+    if(currentTab === 'acronyms'){
+      document.getElementById('aq').focus();
+    } else {
+      document.getElementById('q').focus();
+    }
   }
   if(e.key === 'Escape'){
     document.getElementById('q').blur();
+    document.getElementById('aq').blur();
     clearSearch();
   }
 });
 
 buildPills();
-render();
+setTab('services');
 </script>
 
 </body>
