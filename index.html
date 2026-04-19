@@ -3,96 +3,324 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AWS Services Reference</title>
+  <title>AWS Services — A Reference</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+          fontFamily: {
+            display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+            sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            paper: '#F3EDE0',
+            paper2: '#E9E1CE',
+            ink: '#1A1510',
+            ink2: '#3C342A',
+            rust: '#9A3412',
+            night: '#0E0C08',
+            night2: '#1C1812',
+            bone: '#E8E1D3',
+            bone2: '#B5AB96',
+            amber2: '#D97706',
+          },
         }
       }
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .mono { font-family: 'JetBrains Mono', monospace; }
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #F3EDE0;
+      --bg-soft: #E9E1CE;
+      --ink: #1A1510;
+      --ink-mute: #5C5244;
+      --rule: #1A1510;
+      --accent: #9A3412;
+      --grain-opacity: 0.06;
+    }
+    .dark {
+      --bg: #0E0C08;
+      --bg-soft: #1C1812;
+      --ink: #E8E1D3;
+      --ink-mute: #9C9079;
+      --rule: #E8E1D3;
+      --accent: #D97706;
+      --grain-opacity: 0.04;
+    }
+
+    html, body { background: var(--bg); color: var(--ink); }
+    body {
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      font-feature-settings: 'ss01', 'ss02', 'cv06';
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Paper grain — subtle SVG noise, layered above background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: multiply;
+    }
+    .dark body::before { mix-blend-mode: screen; }
+
+    /* Typography */
+    .f-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+    .f-mono    { font-family: 'IBM Plex Mono', monospace; }
+    .smallcap  { text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; font-weight: 500; }
+    .smallcap-sm { text-transform: uppercase; letter-spacing: 0.18em; font-size: 9px; font-weight: 500; }
+    .num-roman { font-variant-numeric: tabular-nums; }
+
+    /* Rules (horizontal dividers) */
+    .rule-top    { border-top: 1px solid var(--rule); }
+    .rule-bottom { border-bottom: 1px solid var(--rule); }
+    .rule-thick  { border-top: 3px solid var(--rule); }
+
+    /* Hide scrollbars on category rail */
     .pill-scroll::-webkit-scrollbar { display: none; }
     .pill-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Entry cards: brutalist hard-shift hover */
+    .entry {
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      transition: transform 120ms cubic-bezier(.2,.8,.2,1), box-shadow 120ms;
+      position: relative;
+      z-index: 1;
+    }
+    .entry:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 0 var(--rule);
+    }
+    .dark .entry { background: var(--bg-soft); }
+
+    /* Category pill (flat rectangle) */
+    .pill {
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      background: transparent;
+      padding: 5px 10px;
+      transition: background 120ms, color 120ms;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .pill:hover { background: var(--ink); color: var(--bg); }
+    .pill.active { background: var(--ink); color: var(--bg); }
+
+    /* Search input */
+    .search-field {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--rule);
+      border-radius: 0;
+      outline: none;
+    }
+    .search-field:focus { border-color: var(--accent); }
+
+    /* Tabs — underline-only */
+    .tab {
+      padding: 10px 0;
+      margin-right: 28px;
+      color: var(--ink-mute);
+      border-bottom: 2px solid transparent;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+    /* Matrix table */
+    .matrix-table { width: 100%; border-collapse: collapse; }
+    .matrix-table th, .matrix-table td { padding: 14px 16px; vertical-align: top; text-align: left; }
+    .matrix-table thead tr { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .matrix-table tbody tr { border-bottom: 1px dashed var(--ink-mute); }
+    .matrix-table tbody tr:hover { background: var(--bg-soft); }
+
+    /* Staggered entry reveal */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .stagger > * { animation: rise 420ms cubic-bezier(.2,.8,.2,1) both; }
+    .stagger > *:nth-child(1)  { animation-delay: 10ms; }
+    .stagger > *:nth-child(2)  { animation-delay: 30ms; }
+    .stagger > *:nth-child(3)  { animation-delay: 50ms; }
+    .stagger > *:nth-child(4)  { animation-delay: 70ms; }
+    .stagger > *:nth-child(5)  { animation-delay: 90ms; }
+    .stagger > *:nth-child(6)  { animation-delay: 110ms; }
+    .stagger > *:nth-child(7)  { animation-delay: 130ms; }
+    .stagger > *:nth-child(8)  { animation-delay: 150ms; }
+    .stagger > *:nth-child(9)  { animation-delay: 170ms; }
+    .stagger > *:nth-child(10) { animation-delay: 190ms; }
+    .stagger > *:nth-child(n+11) { animation-delay: 210ms; }
+
+    /* Selection */
+    ::selection { background: var(--accent); color: var(--bg); }
+
+    /* kbd */
+    .kbd {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 2px 6px;
+      border: 1px solid var(--rule);
+      line-height: 1;
+    }
+
+    /* Details marker tweak */
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+
+    /* Focus ring — ink outline, not purple */
+    *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 min-h-screen transition-colors duration-200">
+<body class="min-h-screen relative">
 
-  <!-- Sticky Header -->
-  <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="flex items-center gap-2">
-          <svg class="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-          <h1 class="text-lg font-semibold text-slate-900 dark:text-white">AWS Services</h1>
+  <div class="relative z-10">
+
+  <!-- ═══════════════ MASTHEAD (non-sticky) ═══════════════ -->
+  <header>
+    <div class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-6 pb-4">
+      <!-- Top strip: edition metadata + dark toggle -->
+      <div class="flex items-center justify-between smallcap-sm" style="color:var(--ink-mute);">
+        <div class="flex items-center gap-6">
+          <span>AWS · A Reference</span>
+          <span class="hidden sm:inline" style="color:var(--ink-mute);opacity:.6;">·</span>
+          <span class="hidden sm:inline num-roman">EDITION MMXXVI</span>
+          <span class="hidden md:inline" style="color:var(--ink-mute);opacity:.6;">·</span>
+          <span class="hidden md:inline num-roman" id="meta-counter">—</span>
         </div>
-        <div class="ml-auto flex items-center gap-2">
-          <span id="meta" class="text-xs text-slate-500 dark:text-slate-400 mr-1"></span>
-          <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">/</kbd>
-          <button id="darkToggle" onclick="toggleDark()" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
-            <svg id="sunIcon" class="w-4 h-4 text-slate-500 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
-            <svg id="moonIcon" class="w-4 h-4 text-slate-500 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+        <div class="flex items-center gap-3">
+          <span class="hidden sm:inline">Press</span>
+          <span class="kbd">/</span>
+          <span class="hidden sm:inline">to search</span>
+          <button id="darkToggle" onclick="toggleDark()" aria-label="Toggle theme" class="ml-3 p-1.5 border" style="border-color:var(--rule);">
+            <svg id="sunIcon" class="w-4 h-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            <svg id="moonIcon" class="w-4 h-4 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
           </button>
         </div>
       </div>
-      <!-- Search -->
-      <div class="relative">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" id="q" placeholder="Search services, keywords, use cases..." oninput="render()" class="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-shadow">
-        <button id="clearBtn" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hidden transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+
+      <div class="rule-top mt-3"></div>
+
+      <!-- Title block -->
+      <div class="grid grid-cols-12 gap-6 pt-6 pb-6 items-end">
+        <div class="col-span-12 md:col-span-9">
+          <h1 class="f-display leading-[0.9] tracking-tight" style="font-size:clamp(3rem,8vw,6.5rem);font-weight:600;font-variation-settings:'opsz' 144;">
+            Amazon <span class="italic" style="color:var(--accent);font-weight:500;">Web</span><br>Services<span style="color:var(--accent);">.</span>
+          </h1>
+        </div>
+        <div class="col-span-12 md:col-span-3 md:text-right">
+          <p class="f-display italic text-lg md:text-xl leading-snug" style="color:var(--ink-mute);font-variation-settings:'opsz' 48;">
+            A quick-reference<br>study manual for<br>every service AWS<br>currently offers.
+          </p>
+        </div>
       </div>
-    </div>
-    <!-- Tabs -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-1">
-      <div id="tabs" class="flex gap-0 border-b border-slate-200 dark:border-slate-800">
-        <button onclick="setTab('services')" id="tab-services" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Services</button>
-        <button onclick="setTab('matrix')" id="tab-matrix" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Matrix</button>
-        <button onclick="setTab('acronyms')" id="tab-acronyms" class="tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors">Acronyms</button>
-      </div>
-    </div>
-    <!-- Category Pills -->
-    <div id="pills-row" class="max-w-7xl mx-auto px-4 sm:px-6 pb-3 pt-2">
-      <div id="pills" class="pill-scroll flex gap-1.5 overflow-x-auto"></div>
     </div>
   </header>
 
-  <!-- Card Grid / Matrix -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+  <!-- ═══════════════ CONTROL BAR (sticky) ═══════════════ -->
+  <div class="sticky top-0 z-50" style="background:var(--bg);">
+    <div class="max-w-[88rem] mx-auto px-6 sm:px-10">
+      <div class="rule-top"></div>
+
+      <!-- Search field -->
+      <div class="flex items-center gap-4 pt-3 pb-2">
+        <span class="smallcap-sm shrink-0" style="color:var(--ink-mute);">Find</span>
+        <input type="text" id="q" placeholder="service, use case, acronym…"
+          oninput="render()"
+          class="search-field flex-1 py-2 text-lg f-display italic"
+          style="font-variation-settings:'opsz' 48;">
+        <button id="clearBtn" onclick="clearSearch()" class="hidden smallcap" style="color:var(--ink-mute);">Clear ✕</button>
+        <span id="meta" class="smallcap-sm shrink-0 hidden md:inline num-roman" style="color:var(--ink-mute);"></span>
+      </div>
+
+      <div class="rule-top mt-2"></div>
+
+      <!-- Tabs -->
+      <nav id="tabs" class="flex items-end">
+        <button onclick="setTab('services')" id="tab-services" class="tab">Services</button>
+        <button onclick="setTab('matrix')"   id="tab-matrix"   class="tab">Cross-Cloud Matrix</button>
+        <button onclick="setTab('acronyms')" id="tab-acronyms" class="tab">Acronym Index</button>
+      </nav>
+
+      <div class="rule-thick"></div>
+
+      <!-- Category rail -->
+      <div id="pills-row" class="pt-3 pb-3">
+        <div class="flex items-center gap-4">
+          <span class="smallcap-sm shrink-0" style="color:var(--ink-mute);">Filter</span>
+          <div id="pills" class="pill-scroll flex gap-2 overflow-x-auto flex-1"></div>
+        </div>
+      </div>
+
+      <div class="rule-top"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SERVICES / MATRIX ═══════════════ -->
+  <main class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-8 pb-20">
+    <div id="grid" class="stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0"></div>
   </main>
 
-  <!-- Acronyms Section -->
-  <section id="acronym-section" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 hidden">
-    <div class="mb-4">
-      <div class="relative max-w-sm">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" id="aq" placeholder="Search acronyms..." oninput="renderAcronyms()" class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-shadow">
+  <!-- ═══════════════ ACRONYM INDEX ═══════════════ -->
+  <section id="acronym-section" class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-8 pb-20 hidden">
+    <div class="grid grid-cols-12 gap-6 mb-6">
+      <div class="col-span-12 md:col-span-8">
+        <h2 class="f-display text-4xl md:text-5xl leading-none" style="font-variation-settings:'opsz' 96;font-weight:600;">
+          Acronym <span class="italic" style="color:var(--accent);font-weight:500;">Index</span>
+        </h2>
+        <p class="f-display italic text-lg mt-3" style="color:var(--ink-mute);font-variation-settings:'opsz' 48;">
+          Every three-letter monster you'll meet on the exam, defined plainly.
+        </p>
+      </div>
+      <div class="col-span-12 md:col-span-4 md:text-right flex md:block items-center gap-4">
+        <label class="smallcap-sm block" style="color:var(--ink-mute);">Search index</label>
+        <input type="text" id="aq" placeholder="e.g. VPC, RAG, RTO…"
+          oninput="renderAcronyms()"
+          class="search-field f-display italic text-lg w-full mt-1 py-1"
+          style="font-variation-settings:'opsz' 48;">
       </div>
     </div>
-    <div id="acronym-table-wrap" class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-      <table class="w-full text-sm">
+
+    <div class="rule-thick"></div>
+
+    <div id="acronym-table-wrap" class="pt-2">
+      <table class="matrix-table">
         <thead>
-          <tr class="bg-slate-100 dark:bg-slate-800/80 text-left">
-            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 w-28 whitespace-nowrap">Acronym</th>
-            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 w-56">Full Name</th>
-            <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300">Description</th>
+          <tr>
+            <th class="smallcap-sm w-40" style="color:var(--ink-mute);">Acronym</th>
+            <th class="smallcap-sm w-72" style="color:var(--ink-mute);">Full name</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Meaning</th>
           </tr>
         </thead>
         <tbody id="acronym-body"></tbody>
       </table>
     </div>
-    <p id="acronym-empty" class="hidden py-12 text-center text-slate-400 dark:text-slate-500 text-sm">No acronyms match your search.</p>
-    <p id="acronym-count" class="mt-2 text-right text-xs text-slate-400 dark:text-slate-500"></p>
+    <p id="acronym-empty" class="hidden py-16 text-center f-display italic text-xl" style="color:var(--ink-mute);">No acronyms match your search.</p>
+    <p id="acronym-count" class="mt-4 smallcap-sm text-right num-roman" style="color:var(--ink-mute);"></p>
   </section>
+
+  <!-- ═══════════════ COLOPHON ═══════════════ -->
+  <footer class="max-w-[88rem] mx-auto px-6 sm:px-10 pb-10">
+    <div class="rule-thick"></div>
+    <div class="flex flex-wrap items-center justify-between gap-4 pt-4 smallcap-sm" style="color:var(--ink-mute);">
+      <span>Set in Fraunces · IBM Plex Sans · IBM Plex Mono</span>
+      <span class="num-roman">↑ <a href="#" class="underline decoration-dotted underline-offset-4 hover:text-[var(--ink)]" style="color:inherit;">Return to top</a></span>
+    </div>
+  </footer>
+  </div>
 
 <script>
 const CAT = {
@@ -135,6 +363,7 @@ const S = [
   {r:"AWS Wavelength",       h:"Run code inside a 5G carrier's network",                    d:"AWS infrastructure embedded at the edge of Verizon/Vodafone/etc. networks. App traffic never leaves the carrier, giving sub-10ms latency to 5G devices.",     c:"Compute", gcp:"Mobile Edge Cloud", az:"Azure Edge Zones"},
   {r:"AWS Local Zones",      h:"Run apps closer to end users in major metro areas",          d:"Extensions of an AWS Region placed in large population centers. Run latency-sensitive workloads (gaming, real-time rendering) closer to your users without deploying a full Region.", c:"Compute", gcp:"Google Distributed Cloud Edge", az:"Azure Edge Zones"},
   {r:"VMware Cloud on AWS",  h:"Move VMware VMs to AWS without changing anything",          d:"Run vSphere workloads on bare-metal EC2. Same VMware tools, same APIs, but on AWS hardware. The easiest migration path for VMware shops.",                    c:"Compute", gcp:"VMware Engine", az:"Azure VMware Solution"},
+  {r:"AWS Parallel Computing Service",h:"Managed Slurm clusters for HPC workloads",          d:"Run tightly-coupled HPC jobs (CFD, genomics, weather) without managing head nodes, schedulers, or shared storage. AWS handles the Slurm control plane.",    c:"Compute", gcp:"Cluster Toolkit (HPC)", az:"Azure CycleCloud"},
 
   // ── Storage ──
   {r:"Amazon S3",            h:"Store any file, forever, at any scale",                     d:"Object storage with 11 nines of durability. Every AWS service writes to it. Also hosts static websites. The universal data sink.",                             c:"Storage", gcp:"Cloud Storage", az:"Azure Blob Storage"},
@@ -149,6 +378,7 @@ const S = [
   {r:"AWS Storage Gateway",  h:"Your on-prem apps secretly store data in S3",              d:"A virtual appliance in your data center. Your apps see NFS/SMB/iSCSI; behind the scenes it streams data to S3, Glacier, or EBS.",                            c:"Storage", gcp:"Storage Transfer Service", az:"Azure StorSimple"},
   {r:"AWS Backup",           h:"One place to schedule backups across all AWS resources",   d:"Set policies once; AWS backs up EC2, RDS, DynamoDB, EFS, S3, and more on a schedule. Handles retention and cross-region copies.",                             c:"Storage", gcp:"Cloud Backup and DR", az:"Azure Backup"},
   {r:"AWS Elastic Disaster Recovery",h:"Continuous replication to fast failover to AWS",   d:"Replicates on-prem or cloud servers to a cheap staging area in AWS. When disaster strikes, spin up full instances in minutes.",                                c:"Storage", gcp:"Cloud Backup and DR", az:"Azure Site Recovery"},
+  {r:"Amazon S3 Express One Zone",h:"Single-AZ S3 tier built for single-digit millisecond latency",d:"10x faster than S3 Standard for tiny request-heavy workloads like ML training and analytics caching. Data lives in one AZ so durability is lower — not for primary storage.", c:"Storage", gcp:"Cloud Storage (zonal)", az:"Azure Blob Storage (premium)"},
 
   // ── Database ──
   {r:"Amazon RDS",           h:"Managed relational DB — you pick the engine",              d:"AWS handles provisioning, patching, backups, and failover. Pick MySQL, PostgreSQL, Oracle, SQL Server, or MariaDB. You just run queries.",                     c:"Database", gcp:"Cloud SQL", az:"Azure SQL Database"},
@@ -164,6 +394,9 @@ const S = [
   {r:"Amazon Timestream",    h:"Time-series DB — made for sensor and metric data",         d:"Purpose-built for data that arrives in timestamp order. 1/10th the cost of storing the same data in RDS. Auto-tiers warm data to cheap storage.",             c:"Database", gcp:"Cloud Bigtable, BigQuery", az:"Azure Time Series Insights"},
   {r:"Amazon RDS for Db2",   h:"Managed IBM Db2 in the cloud",                             d:"Lift-and-shift Db2 workloads to AWS without rewriting. AWS patches, backs up, and scales the engine.",                                                        c:"Database", gcp:"Cloud SQL", az:"Azure SQL Database"},
   {r:"Amazon Lightsail managed DBs",h:"Simple managed MySQL/PostgreSQL, flat price",      d:"A fixed monthly price covers the DB instance, storage, and bandwidth. Designed to pair with Lightsail compute for simple apps.",                              c:"Database", gcp:"Cloud SQL", az:"Azure Database for MySQL / PostgreSQL"},
+  {r:"Amazon RDS Proxy",     h:"Connection pooling in front of your RDS database",        d:"Share one pool of DB connections across thousands of Lambda invocations or containers. Also speeds failover — clients reconnect to the proxy, not the DB.",   c:"Database", gcp:"Cloud SQL Auth Proxy", az:"Azure Database Proxy"},
+  {r:"Amazon RDS Custom",    h:"Managed RDS with OS and DB-level access",                 d:"For Oracle or SQL Server workloads needing sysadmin rights, custom agents, or specific patches. You trade some automation for full control.",                   c:"Database", gcp:"Bare Metal Solution (Oracle)", az:"SQL Server on Azure VMs"},
+  {r:"Amazon QLDB",          h:"Immutable ledger database with cryptographic verification",d:"Append-only journal with a built-in hash chain — every change is auditable and tamper-evident. AWS announced end-of-support July 2025; plan migrations off.", c:"Database", gcp:"(no direct equiv.)", az:"Azure SQL Ledger"},
 
   // ── Analytics ──
   {r:"Amazon Redshift",      h:"SQL data warehouse for petabyte-scale analytics",          d:"Columnar storage + massively parallel queries. Run complex analytics across terabytes in seconds for less than on-prem warehouses.",                           c:"Analytics", gcp:"BigQuery", az:"Azure Synapse Analytics"},
@@ -183,6 +416,7 @@ const S = [
   {r:"Amazon DataZone",      h:"Data catalog with governed access across your org",        d:"Publish datasets to a business catalog, manage who can access what, and let analysts discover data across accounts and sources.",                              c:"Analytics", gcp:"Dataplex Universal Catalog", az:"Microsoft Purview"},
   {r:"Amazon FinSpace",      h:"Data platform purpose-built for financial services",       d:"Ingest, catalog, and analyze petabytes of financial data with time-series functions like Bollinger bands and VWAP built in.",                                  c:"Analytics"},
   {r:"Amazon MWAA",          h:"Managed Apache Airflow — orchestrate data pipelines",      d:"Run Airflow without running Airflow. AWS manages the scheduler, workers, and web server. Write DAGs in Python as usual.",                                     c:"Analytics", gcp:"Cloud Composer", az:"Azure Managed Airflow (Data Factory)"},
+  {r:"Amazon Managed Service for Apache Flink",h:"Stream processing with Flink, no cluster management",d:"Formerly Kinesis Data Analytics. Write Java/Python/SQL Flink jobs for real-time aggregations, joins, and windowing. AWS scales workers based on load.",  c:"Analytics", gcp:"Dataflow", az:"Azure Stream Analytics, HDInsight Flink"},
 
   // ── ML / AI ──
   {r:"Amazon SageMaker AI",  h:"End-to-end ML platform — build, train, deploy",           d:"Notebooks, data labeling, model training on GPU clusters, experiment tracking, endpoint hosting, and MLOps pipelines — all in one place.",                    c:"ML / AI", gcp:"Vertex AI", az:"Azure Machine Learning"},
@@ -213,7 +447,7 @@ const S = [
   {r:"Amazon Comprehend Medical",h:"Extract clinical info from doctor's notes and reports",d:"Identifies medications, dosages, diagnoses, and procedures from unstructured medical text. HIPAA-eligible.",                                                  c:"ML / AI", gcp:"Healthcare Natural Language API", az:"Azure Text Analytics for Health"},
   {r:"Amazon CodeGuru",      h:"Find bugs and profile slow code automatically",           d:"Reviewer scans PRs for security issues and logic bugs. Profiler identifies the specific lines of code burning the most CPU.",                                  c:"ML / AI", gcp:"Gemini Code Assist", az:"GitHub Advanced Security"},
   {r:"Amazon DevOps Guru",   h:"ML that spots your app's problems before users do",       d:"Learns what 'normal' looks like for your service, then flags deviations — latency spikes, error surges — before they become outages.",                       c:"ML / AI", gcp:"Cloud Operations (anomaly detection)", az:"Azure Monitor (AIOps)"},
-  {r:"Amazon A2I",           h:"Route low-confidence ML predictions to human reviewers",  d:"When your model isn't sure, A2I queues the item for a human to check. Integrates with Textract, Rekognition, and custom models.",                            c:"ML / AI", gcp:"Vertex AI Human-in-the-loop", az:"Azure Cognitive Services (human review)"},
+  {r:"Amazon Augmented AI (A2I)",h:"Route low-confidence ML predictions to human reviewers",  d:"When your model isn't sure, A2I queues the item for a human to check. Integrates with Textract, Rekognition, and custom models.",                            c:"ML / AI", gcp:"Vertex AI Human-in-the-loop", az:"Azure Cognitive Services (human review)"},
   {r:"Amazon PartyRock",     h:"No-code generative AI app builder for learning",          d:"Drag prompts and model widgets together to build apps — no API key, no code. Good for prototyping and learning prompt engineering.",                          c:"ML / AI", gcp:"Google AI Studio", az:"Azure AI Foundry"},
   {r:"Amazon Omics",         h:"Store and analyze genomics and proteomics data at scale", d:"Purpose-built for life sciences. Ingest FASTQ/BAM/VCF files, run bioinformatics workflows, and query variants across cohorts.",                              c:"ML / AI", gcp:"Cloud Life Sciences", az:"Microsoft Genomics"},
   {r:"AWS DeepRacer",        h:"Learn reinforcement learning by racing a tiny car",       d:"A 1/18-scale autonomous race car. Train an RL model in simulation, deploy it to the physical car, race globally.",                                            c:"ML / AI"},
@@ -221,6 +455,9 @@ const S = [
   {r:"AWS HealthScribe",     h:"Transcribe patient-clinician conversations into clinical notes",d:"Records a consultation, identifies who's speaking, extracts medical terms, and drafts a structured clinical note automatically.",                       c:"ML / AI", gcp:"Healthcare Natural Language API", az:"Azure Health Bot"},
   {r:"AWS Panorama",         h:"Run computer vision models on your existing IP cameras",  d:"An edge appliance that connects to your camera network. Runs ML inference locally — no video upload to the cloud needed.",                                    c:"ML / AI", gcp:"Vertex AI Edge", az:"Azure Percept (retired), Azure IoT Edge"},
   {r:"Amazon Mechanical Turk",h:"Access a global crowd of human workers for tasks",     d:"Distribute image labeling, surveys, transcription, or any task that needs human judgment to thousands of workers via an API.",                   c:"ML / AI"},
+  {r:"Amazon Nova",          h:"AWS's own foundation model family — text, image, and video",d:"Launched at re:Invent 2024. Nova Micro/Lite/Pro/Premier for text, Canvas for images, Reel for video. Priced below Claude and Llama; available through Bedrock.", c:"ML / AI", gcp:"Gemini", az:"Azure OpenAI Service (GPT-4)"},
+  {r:"Amazon Bedrock Data Automation",h:"Extract structured data from unstructured documents, images, audio, and video",d:"One API pulls fields from invoices, summarizes recorded calls, and captions videos without wiring together Textract + Transcribe + Rekognition yourself.", c:"ML / AI", gcp:"Document AI, Vertex AI Multimodal", az:"Azure AI Document Intelligence"},
+  {r:"Amazon Q Business",    h:"Enterprise AI assistant that answers from your company's data",d:"Connect it to SharePoint, Salesforce, Confluence, S3, Slack; employees get cited answers that respect the underlying document permissions. Separate product from Q Developer.", c:"ML / AI", gcp:"Gemini for Google Workspace", az:"Microsoft 365 Copilot"},
 
   // ── Networking ──
   {r:"Amazon VPC",           h:"Your private, isolated section of the AWS network",       d:"Define your own IP ranges, subnets, route tables, and gateways. Everything you run in AWS lives inside a VPC.",                                              c:"Networking", gcp:"Virtual Private Cloud (VPC)", az:"Azure Virtual Network"},
@@ -238,6 +475,11 @@ const S = [
   {r:"AWS Verified Access",  h:"Zero-trust access to corporate apps — no VPN",           d:"Evaluates every request against identity and device posture. Grants access per-application rather than putting users on the whole network.",                  c:"Networking", gcp:"BeyondCorp Enterprise", az:"Azure AD App Proxy, Entra Private Access"},
   {r:"Amazon VPC Lattice",   h:"Service-to-service networking across accounts and VPCs", d:"Handles auth, routing, and monitoring for cross-VPC service calls without custom code or complex VPC peering setups.",                                        c:"Networking", gcp:"Traffic Director", az:"Azure Service Fabric"},
   {r:"AWS Private 5G",       h:"Deploy your own private cellular network on-premises",   d:"AWS ships you small cells, SIM cards, and the 5G core. Connect factory equipment, robots, or vehicles without Wi-Fi dead zones.",                            c:"Networking", gcp:"Google Distributed Cloud (5G)", az:"Azure Private MEC"},
+  {r:"AWS Network Firewall", h:"Managed stateful firewall and IPS at the VPC edge",       d:"Deep packet inspection, intrusion prevention, and URL filtering using Suricata-compatible rules. Different from WAF (which is for HTTP) and Security Groups (which are stateless-ish at scale).", c:"Networking", gcp:"Cloud NGFW", az:"Azure Firewall"},
+  {r:"AWS Client VPN",       h:"Managed OpenVPN endpoint for remote workers",             d:"Your laptop opens a private tunnel into a VPC and reaches internal apps. Elastic — scales with concurrent connections. Different from Site-to-Site VPN (router-to-VPC).",  c:"Networking", gcp:"BeyondCorp Enterprise, Cloud VPN", az:"Azure VPN Gateway (point-to-site)"},
+  {r:"AWS Cloud WAN",        h:"Build a global private network from a single policy",    d:"Central console stitches VPCs, branches, and Direct Connect links into one backbone. Replaces the complex Transit-Gateway-mesh-per-region pattern at enterprise scale.", c:"Networking", gcp:"Network Connectivity Center", az:"Azure Virtual WAN"},
+  {r:"Route 53 Resolver",    h:"Hybrid DNS between your VPC and on-prem network",         d:"Inbound endpoints let on-prem resolve AWS private zones; outbound endpoints let VPC resources resolve your internal domains. The missing piece for hybrid DNS.",    c:"Networking", gcp:"Cloud DNS (forwarding zones)", az:"Azure DNS Private Resolver"},
+  {r:"Route 53 Application Recovery Controller",h:"Readiness checks and one-click failover for multi-region apps",d:"Continuously audits whether your standby region can actually take over, and flips traffic with a single API call when your primary goes down.",  c:"Networking", gcp:"Traffic Director", az:"Azure Traffic Manager"},
 
   // ── Security ──
   {r:"AWS IAM",              h:"Control who can do what across all of AWS",              d:"The security backbone. Users, roles, groups, and policies define every permission. The first thing you configure on any AWS account.",                        c:"Security", gcp:"Cloud IAM", az:"Azure Active Directory / Entra ID"},
@@ -260,6 +502,12 @@ const S = [
   {r:"AWS Audit Manager",    h:"Continuous evidence collection for compliance audits",   d:"Maps AWS resource configurations to compliance frameworks (GDPR, PCI DSS, CIS). Assembles audit-ready reports automatically.",                              c:"Security", gcp:"Security Command Center (compliance)", az:"Microsoft Purview Compliance Manager"},
   {r:"Amazon Verified Permissions",h:"Fine-grained authorization engine for your own apps",d:"Externalizes your app's 'can user X do action Y on resource Z?' logic. Uses the Cedar policy language. Keeps auth logic out of app code.",              c:"Security", gcp:"Identity-Aware Proxy, IAM Conditions", az:"Azure RBAC, OPA / CASL"},
   {r:"Amazon Security Lake", h:"Centralize all security logs in one place",              d:"Aggregates CloudTrail, VPC Flow Logs, Route 53, and third-party tool logs into a normalized OCSF format in your own S3 bucket.",                           c:"Security", gcp:"Chronicle (Google Security Operations)", az:"Microsoft Sentinel"},
+  {r:"AWS IAM Access Analyzer",h:"Find resources accidentally exposed to the world or other accounts",d:"Scans S3 buckets, IAM roles, KMS keys, Lambda, SQS, Secrets Manager and more. Also validates new IAM policies before you attach them. Free for external-access findings.", c:"Security", gcp:"IAM Recommender, Policy Analyzer", az:"Microsoft Entra Permissions Management"},
+  {r:"AWS Resource Access Manager (RAM)",h:"Share AWS resources across accounts without duplication",d:"Share VPC subnets, Transit Gateways, Route 53 Resolver rules, License Manager configurations, and more across your Organization. Keeps multi-account networks simple.", c:"Security", gcp:"Shared VPC", az:"Azure Resource Manager (cross-subscription)"},
+  {r:"AWS Private CA",       h:"Your own private certificate authority in the cloud",    d:"Issue internal TLS certs for service-to-service auth, IoT devices, or VPN users. ACM handles public certs; Private CA handles everything inside your perimeter.", c:"Security", gcp:"Certificate Authority Service", az:"Azure Key Vault (certificates)"},
+  {r:"AWS Signer",           h:"Managed code signing for Lambda, IoT, and containers",   d:"Sign your artifacts with AWS-managed keys so runtimes reject tampered code. Enforces supply-chain integrity without running your own PKI.",                        c:"Security", gcp:"Binary Authorization", az:"Azure Code Signing"},
+  {r:"AWS Payment Cryptography",h:"Managed HSM for payment card cryptographic operations",d:"PIN translation, card verification, and key exchange under PCI PIN standards. Replaces on-prem payment HSMs without buying and managing racks.",                  c:"Security", gcp:"(no direct equiv.)", az:"Azure Dedicated HSM"},
+  {r:"AWS Nitro Enclaves",   h:"Isolated compute environments for highly sensitive data",d:"Spin up a side-VM with no persistent storage, no networking, and no admin access — even the parent instance can't peek in. For key material and PII processing.",  c:"Security", gcp:"Confidential Computing", az:"Azure Confidential Computing"},
 
   // ── Management ──
   {r:"AWS CloudFormation",   h:"Describe your whole infrastructure in a YAML file",      d:"Define EC2, RDS, Lambda, VPCs — everything — as code. Deploy the same stack to dev, staging, and prod identically. Rollback on failure.",                   c:"Mgmt", gcp:"Cloud Deployment Manager, Terraform", az:"Azure Resource Manager, Bicep"},
@@ -280,10 +528,16 @@ const S = [
   {r:"Amazon Managed Prometheus",h:"Managed Prometheus metrics storage for Kubernetes", d:"Ingest metrics from your EKS clusters at scale without running Prometheus servers. Compatible with PromQL and existing exporters.",                         c:"Mgmt", gcp:"Google Cloud Managed Service for Prometheus", az:"Azure Monitor managed Prometheus"},
   {r:"AWS Well-Architected Tool",h:"Score your workload against AWS best practices",    d:"Answer questions about your architecture; get a report of risks across the six pillars: security, reliability, performance, cost, ops, sustainability.",     c:"Mgmt", gcp:"Google Cloud Architecture Framework", az:"Azure Well-Architected Framework"},
   {r:"AWS Health",           h:"Personalized alerts when AWS events affect your resources",d:"Notifies you before planned maintenance, when service events impact your specific accounts or regions. More targeted than the public status page.",       c:"Mgmt", gcp:"Google Cloud Status", az:"Azure Service Health"},
-  {r:"AWS OpsWorks",         h:"Managed Chef and Puppet for server configuration",       d:"Use code to configure your servers. OpsWorks manages the Chef/Puppet control plane so you only write recipes/manifests.",                                   c:"Mgmt", az:"Azure Automation"},
+  {r:"AWS OpsWorks",         h:"Managed Chef and Puppet for server configuration (end-of-life May 2024)",d:"Historically managed the Chef/Puppet control plane so you only wrote recipes/manifests. Reached end-of-life in May 2024 — migrate to Systems Manager or self-managed Chef/Puppet.", c:"Mgmt", az:"Azure Automation"},
   {r:"AWS Proton",           h:"Platform engineering: standardize container and serverless deployments",d:"Platform teams define templates; developers self-serve deployments. Keeps infra consistent without a central ops bottleneck.",              c:"Mgmt", gcp:"Cloud Run (opinionated deployments)", az:"Azure Developer Platform"},
   {r:"AWS User Notifications",h:"Central hub for notifications from all AWS services",  d:"Route CloudWatch alarms, Config findings, and Health events to email, SMS, Slack, or push — from one place, with one format.",                             c:"Mgmt", gcp:"Cloud Monitoring alerting", az:"Azure Monitor action groups"},
   {r:"AWS Support",          h:"Technical support plans — Basic, Developer, Business, Enterprise",d:"Free Basic tier covers account and billing. Developer starts at $29/mo. Business adds 24/7 chat and 1-hour critical response. Enterprise provides a dedicated TAM and 15-minute critical SLA. CLF-C02 favorite.", c:"Mgmt", gcp:"Google Cloud Support", az:"Azure Support Plans"},
+  {r:"AWS Resilience Hub",   h:"Score and improve your workload's recovery posture",      d:"Set RTO/RPO targets per app; Resilience Hub analyzes your architecture and flags gaps. Integrates with Fault Injection Service to verify the fixes actually work.", c:"Mgmt", gcp:"(no direct equiv.)", az:"Azure Site Recovery (with Advisor)"},
+  {r:"AWS Chatbot",          h:"CloudWatch and Health alerts → Slack, Teams, Chime",      d:"No webhook plumbing. Install the app, map channels to SNS topics, and let ops chat with AWS directly — including running a limited set of CLI commands from the channel.", c:"Mgmt", gcp:"(no direct equiv.)", az:"Azure Monitor (Teams connector)"},
+  {r:"AWS Resource Groups",  h:"Group AWS resources by tag for bulk operations",          d:"Define a query (e.g. 'all ec2 where env=prod') and treat the result as a unit. Foundation for tag-based automation, Systems Manager targeting, and cost allocation.", c:"Mgmt", gcp:"Resource Manager (labels)", az:"Azure Resource Groups"},
+  {r:"AWS Resource Explorer",h:"Cross-region, cross-service resource search",             d:"Type a name, tag, or ID; Resource Explorer finds the resource wherever it lives. Indexes in the background so queries return instantly, unlike the old tag-based search.",  c:"Mgmt", gcp:"Cloud Asset Inventory", az:"Azure Resource Graph"},
+  {r:"AWS Distro for OpenTelemetry",h:"AWS-supported builds of the OpenTelemetry collector and SDKs",d:"Production-ready OTel agents pre-wired to CloudWatch, X-Ray, and Managed Prometheus. Use the standard OTel API without depending on upstream release cadence.", c:"Mgmt", gcp:"Google Cloud Ops Agent (OTel)", az:"Azure Monitor OpenTelemetry"},
+  {r:"AWS Marketplace",      h:"Catalog of third-party software billed through AWS",      d:"AMIs, SaaS, container images, ML models, and consulting packages from ISVs. Charges flow through to your AWS invoice — no separate vendor procurement.",              c:"Mgmt", gcp:"Google Cloud Marketplace", az:"Azure Marketplace"},
 
   // ── Integration ──
   {r:"AWS Step Functions",   h:"Visual state machine to orchestrate multi-step workflows",d:"Chain Lambdas, ECS tasks, and API calls into a workflow with branching, retries, and error handling. No glue code to maintain.",                         c:"Integration", gcp:"Cloud Workflows", az:"Azure Logic Apps, Durable Functions"},
@@ -301,7 +555,7 @@ const S = [
   {r:"AWS CodeCommit",       h:"Private Git repository hosted on AWS",                   d:"Standard Git repo. Integrates with IAM so you control access without a separate service. Being gradually deprecated in favor of GitHub/CodeCatalyst.",     c:"Dev tools", gcp:"Cloud Source Repositories", az:"Azure Repos"},
   {r:"AWS CodeArtifact",     h:"Private package repository for npm, PyPI, Maven, NuGet", d:"Cache public packages from npm/PyPI/Maven and publish private ones. IAM controls who can pull or publish.",                                               c:"Dev tools", gcp:"Artifact Registry", az:"Azure Artifacts"},
   {r:"Amazon CodeCatalyst",  h:"Unified dev environment — issues, code, CI/CD in one",  d:"AWS's answer to GitHub with integrated AWS deployments. Blueprints scaffold a full project with repo, pipeline, and dev environment.",                    c:"Dev tools", gcp:"Cloud Workstations, Cloud Source Repositories", az:"GitHub (Azure integration), Azure DevOps"},
-  {r:"AWS Cloud9",           h:"Browser-based IDE with a terminal and AWS access",       d:"Full code editor + shell in your browser, pre-configured for AWS. No local install. Useful for quick edits or teaching.",                                  c:"Dev tools", gcp:"Cloud Shell Editor", az:"VS Code Online, GitHub Codespaces"},
+  {r:"AWS Cloud9",           h:"Browser-based IDE with a terminal and AWS access (closed to new customers)",d:"Full code editor + shell in your browser, pre-configured for AWS. AWS closed Cloud9 to new customers in July 2024 — existing users still have access, but new projects should use CodeCatalyst Dev Environments or local IDEs with Q Developer.", c:"Dev tools", gcp:"Cloud Shell Editor", az:"VS Code Online, GitHub Codespaces"},
   {r:"AWS CloudShell",       h:"Instant terminal in the AWS Console, pre-authenticated", d:"Click the shell icon in the console, and you're in a bash session with the AWS CLI ready. No local setup, no credentials to configure.",                  c:"Dev tools", gcp:"Cloud Shell", az:"Azure Cloud Shell"},
   {r:"AWS X-Ray",            h:"Distributed tracing — see the path of every request",   d:"Instruments your app to trace requests across Lambda, EC2, and ECS. Generates a service map and highlights slow or failing segments.",                     c:"Dev tools", gcp:"Cloud Trace", az:"Azure Application Insights"},
   {r:"AWS Fault Injection Service",h:"Deliberately break things to find hidden weaknesses",d:"Run controlled chaos engineering experiments: inject CPU spikes, network latency, or instance terminations. Measures how your app responds.",           c:"Dev tools", gcp:"Fault Injection Testing (Cloud)", az:"Azure Chaos Studio"},
@@ -319,6 +573,7 @@ const S = [
   {r:"AWS Copilot",          h:"CLI that simplifies building and deploying containers on ECS",d:"One command to init, build, and deploy containerized apps. Generates CloudFormation, handles load balancers, service discovery, and pipelines. Opinionated but fast.", c:"Containers", gcp:"Cloud Run CLI (gcloud)", az:"Azure Container Apps CLI"},
   {r:"AWS App2Container",    h:"Containerize your existing .NET and Java apps automatically",d:"Analyzes your running app, packages it into a Docker image, and generates ECS/EKS deployment configs. Migration tool.",                              c:"Containers", gcp:"Migrate to Containers", az:"Azure Migrate"},
   {r:"Red Hat OpenShift on AWS",h:"Managed OpenShift (enterprise Kubernetes)",           d:"For teams standardized on OpenShift. AWS and Red Hat jointly operate the control plane. Same OpenShift APIs and tools.",                                   c:"Containers", gcp:"OpenShift on GCP (self-managed)", az:"Azure Red Hat OpenShift"},
+  {r:"Amazon EKS Anywhere",  h:"Run the EKS Kubernetes distro on your own hardware or VMware",d:"Same Kubernetes distribution AWS runs in the cloud, installable on-prem. For data-sovereignty rules or edge sites where workloads genuinely can't move to AWS.", c:"Containers", gcp:"GKE on Anthos (bare metal / VMware)", az:"Azure Arc-enabled Kubernetes"},
 
   // ── IoT ──
   {r:"AWS IoT Core",         h:"Connect devices to AWS over MQTT — billions at scale",  d:"The central hub for IoT. Devices publish messages; rules route them to Lambda, S3, DynamoDB, or Kinesis in real time.",                                    c:"IoT", gcp:"Cloud IoT Core (deprecated) / Pub/Sub", az:"Azure IoT Hub"},
@@ -363,12 +618,14 @@ const S = [
   {r:"Amazon WorkMail",      h:"Managed business email and calendar compatible with Outlook",d:"Exchange-compatible managed email. Users keep using Outlook, iOS Mail, etc. AWS handles servers, backups, and spam filtering.",                  c:"Business apps", gcp:"Google Workspace", az:"Microsoft 365"},
   {r:"AWS AppFabric",        h:"Normalize security logs across your SaaS apps into one feed",d:"Connects 50+ SaaS apps (Okta, Slack, Zoom, Salesforce). Normalizes their audit logs into OCSF so your SIEM gets one consistent format.",     c:"Business apps", gcp:"Chronicle (SIEM integrations)", az:"Microsoft Sentinel (SaaS connectors)"},
   {r:"Amazon WorkDocs",      h:"Managed file storage and collaboration (mostly deprecated)",d:"Secure document sharing with feedback and version history. AWS has stopped new sign-ups — migrate to SharePoint or Google Drive.",              c:"Business apps", gcp:"Google Drive", az:"SharePoint, OneDrive"},
+  {r:"AWS Supply Chain",     h:"ML-powered supply chain visibility and insights",          d:"Connects to your ERP (SAP, Oracle), forecasts stockouts, suggests replenishments, and tracks supplier lead times. Operational analytics packaged as a SaaS.",     c:"Business apps", gcp:"(no direct equiv.)", az:"Dynamics 365 Supply Chain"},
 
   // ── End-user ──
   {r:"Amazon WorkSpaces",    h:"Managed cloud desktop — Windows or Linux in a browser",d:"Provision virtual desktops in minutes. Employees access them from anywhere. Pay monthly or hourly per seat.",                                        c:"End-user", gcp:"Cloud Workstations", az:"Azure Virtual Desktop"},
   {r:"Amazon WorkSpaces Applications",h:"Stream desktop apps to any device without a full VDI",d:"Users get the app in their browser; compute runs in AWS. No thick client, no VPN. Scales to global teams instantly.",                       c:"End-user", gcp:"Cloud Workstations (app streaming)", az:"Azure Virtual Desktop (RemoteApp)"},
   {r:"Amazon WorkSpaces Web",h:"Secure browser for internal web apps — no endpoint risk",d:"A managed browser that runs in AWS. Users access internal sites; no data ever touches the end device.",                                          c:"End-user", gcp:"BeyondCorp Enterprise (browser isolation)", az:"Azure Virtual Desktop (browser)"},
   {r:"Amazon WorkSpaces Thin Client",h:"A $200 device that boots into a WorkSpaces session",d:"Compact box, plug in a monitor and keyboard. No local storage, no apps — just a secure gateway to a cloud desktop.",                         c:"End-user", gcp:"ChromeOS Flex", az:"Azure Virtual Desktop (thin client)"},
+  {r:"Amazon AppStream 2.0", h:"Stream individual desktop applications to a browser",      d:"Run one heavy app (CAD, trading terminal, analytics tool) in AWS; users access it via a browser tab with no install. Different from WorkSpaces (which is a full desktop).", c:"End-user", gcp:"Cloud Workstations (app streaming)", az:"Azure Virtual Desktop (RemoteApp)"},
 
   // ── Front-end ──
   {r:"AWS Amplify",          h:"Build and deploy full-stack web and mobile apps on AWS",d:"Connects your React/Next/Vue frontend to a managed backend (auth, API, database, storage) and deploys to a global CDN with one command.",          c:"Front-end", gcp:"Firebase, Cloud Run", az:"Azure Static Web Apps"},
@@ -419,27 +676,24 @@ function toggleDark(){
   localStorage.setItem('dark', isDark);
   applyDark();
   render();
+  if(currentTab === 'acronyms') renderAcronyms();
+  buildPills();
 }
 
 function clearSearch(){
-  document.getElementById('q').value = '';
+  const q = document.getElementById('q');
+  if(q) q.value = '';
   document.getElementById('clearBtn').classList.add('hidden');
   render();
 }
 
 function setTab(t){
   currentTab = t;
-  // Update tab button styles
   ['services','matrix','acronyms'].forEach(id => {
     const btn = document.getElementById('tab-'+id);
-    if(id === t){
-      btn.className = 'tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors border-amber-500 text-amber-600 dark:text-amber-400';
-    } else {
-      btn.className = 'tab-btn px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
-    }
+    btn.classList.toggle('active', id === t);
   });
 
-  // Show/hide pills row and main grid vs acronym section
   const pillsRow = document.getElementById('pills-row');
   const mainEl = document.querySelector('main');
   const acronymSection = document.getElementById('acronym-section');
@@ -453,21 +707,27 @@ function setTab(t){
     pillsRow.classList.remove('hidden');
     mainEl.classList.remove('hidden');
     acronymSection.classList.add('hidden');
-    // Adjust grid class based on tab
     const g = document.getElementById('grid');
     if(t === 'matrix'){
       g.className = '';
     } else {
-      g.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3';
+      g.className = 'stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0';
     }
     render();
   }
 }
 
+function restagger(el){
+  el.style.animation = 'none';
+  // trigger reflow
+  void el.offsetHeight;
+  el.style.animation = '';
+}
+
 function render(){
-  const q = document.getElementById("q").value.toLowerCase().trim();
-  const clearBtn = document.getElementById("clearBtn");
-  clearBtn.classList.toggle('hidden', !q);
+  const qEl = document.getElementById("q");
+  const q = qEl ? qEl.value.toLowerCase().trim() : '';
+  document.getElementById("clearBtn").classList.toggle('hidden', !q);
 
   const words = q ? q.split(/\s+/) : [];
   const filtered = deduped.filter(s => {
@@ -476,73 +736,84 @@ function render(){
     const txt = (s.r+" "+s.h+" "+s.d+" "+s.c+" "+(s.gcp||"")+" "+(s.az||"")).toLowerCase();
     return words.every(w => txt.includes(w));
   });
-  document.getElementById("meta").textContent = filtered.length + " of " + deduped.length + " services";
+
+  const total = deduped.length;
+  const m = document.getElementById("meta");
+  if(m) m.textContent = (filtered.length === total)
+    ? `${total} services · ${Object.keys(CAT).length} categories`
+    : `${filtered.length} / ${total}`;
+  const mc = document.getElementById("meta-counter");
+  if(mc) mc.textContent = `N° ${String(total).padStart(3,'0')} SERVICES`;
+
   const g = document.getElementById("grid");
+  if(currentTab === 'matrix'){ renderMatrix(filtered, g); return; }
 
-  if(currentTab === 'matrix'){
-    renderMatrix(filtered, g);
-    return;
-  }
-
-  // Default: card grid
-  g.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3';
+  g.className = 'stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0';
   if(!filtered.length){
-    g.innerHTML = '<div class="col-span-full py-16 text-center"><div class="text-slate-400 dark:text-slate-500 text-4xl mb-3">&#128270;</div><p class="text-slate-500 dark:text-slate-400 text-sm">No services match your search. Try a different keyword.</p></div>';
+    g.innerHTML = `<div class="col-span-full py-24 text-center">
+      <div class="f-display italic text-3xl" style="color:var(--ink-mute);font-variation-settings:'opsz' 72;">Nothing matches &mdash; try a different query.</div>
+    </div>`;
     return;
   }
-  g.innerHTML = filtered.map(s => {
+
+  g.innerHTML = filtered.map((s, i) => {
     const col = CAT[s.c] || {bg:"#E1F5EE",tc:"#085041",dkbg:"#042F2E",dktc:"#5EEAD4"};
-    const badgeBg = isDark ? (col.dkbg||col.bg) : col.bg;
-    const badgeTc = isDark ? (col.dktc||col.tc) : col.tc;
-    return `<div class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm transition-all duration-150">
-      <div class="flex items-start justify-between gap-2 mb-2">
-        <div class="flex-1 min-w-0">
-          <div class="mono text-[11px] text-slate-500 dark:text-slate-400 truncate mb-0.5">${s.r}</div>
-          <div class="text-sm font-medium text-slate-900 dark:text-white leading-snug">${s.h}</div>
-        </div>
-        <span class="shrink-0 mt-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap" style="background:${badgeBg};color:${badgeTc}">${s.c}</span>
+    const accentBg = isDark ? (col.dkbg||col.bg) : col.bg;
+    const accentFg = isDark ? (col.dktc||col.tc) : col.tc;
+    const num = String(i+1).padStart(3,'0');
+    const hasExtras = !!(s.gcp || s.az);
+    return `<article class="entry p-5 -mt-px -ml-px flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <span class="smallcap-sm num-roman" style="color:var(--ink-mute);">№ ${num}</span>
+        <span class="smallcap-sm px-2 py-[3px]" style="background:${accentBg};color:${accentFg};">${s.c}</span>
       </div>
-      <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${s.d}</p>
-      ${s.gcp ? `<details class="mt-2 group/gcp"><summary class="text-[10px] font-medium text-blue-500 dark:text-blue-400 cursor-pointer select-none list-none flex items-center gap-1"><span>▸</span> GCP</summary><p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 pl-3">${s.gcp}</p></details>` : ''}
-      ${s.az ? `<details class="mt-1 group/az"><summary class="text-[10px] font-medium text-cyan-500 dark:text-cyan-400 cursor-pointer select-none list-none flex items-center gap-1"><span>▸</span> Azure</summary><p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 pl-3">${s.az}</p></details>` : ''}
-    </div>`;
+      <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">${s.r}</h3>
+      <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">${s.h}</p>
+      <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">${s.d}</p>
+      ${hasExtras ? `
+      <div class="mt-auto pt-3" style="border-top:1px dashed var(--ink-mute);">
+        <div class="flex flex-wrap gap-x-6 gap-y-2 smallcap-sm">
+          ${s.gcp ? `<details><summary style="color:var(--ink-mute);">→ GCP</summary><p class="f-mono text-[11px] mt-1 normal-case tracking-normal" style="color:var(--ink);letter-spacing:0;">${s.gcp}</p></details>` : ''}
+          ${s.az ? `<details><summary style="color:var(--ink-mute);">→ Azure</summary><p class="f-mono text-[11px] mt-1 normal-case tracking-normal" style="color:var(--ink);letter-spacing:0;">${s.az}</p></details>` : ''}
+        </div>
+      </div>` : ''}
+    </article>`;
   }).join("");
+
+  restagger(g);
 }
 
 function renderMatrix(filtered, g){
-  g.className = 'overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800';
+  g.className = '';
   if(!filtered.length){
-    g.innerHTML = '<div class="py-16 text-center"><div class="text-slate-400 dark:text-slate-500 text-4xl mb-3">&#128270;</div><p class="text-slate-500 dark:text-slate-400 text-sm">No services match your search.</p></div>';
+    g.innerHTML = `<div class="py-24 text-center f-display italic text-3xl" style="color:var(--ink-mute);font-variation-settings:'opsz' 72;">Nothing matches &mdash; try a different query.</div>`;
     return;
   }
-  g.innerHTML = `<div class="overflow-x-auto">
-  <table class="w-full text-sm">
-    <thead class="sticky top-0 z-10">
-      <tr class="bg-slate-100 dark:bg-slate-800 text-left">
-        <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">AWS Service</th>
-        <th class="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Category</th>
-        <th class="px-4 py-2.5 text-xs font-semibold text-blue-500 dark:text-blue-400 whitespace-nowrap">GCP Equivalent</th>
-        <th class="px-4 py-2.5 text-xs font-semibold text-cyan-500 dark:text-cyan-400 whitespace-nowrap">Azure Equivalent</th>
+  g.innerHTML = `<div class="overflow-x-auto rule-top">
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th class="smallcap-sm w-[36%]" style="color:var(--ink-mute);">AWS service</th>
+        <th class="smallcap-sm w-[14%]" style="color:var(--ink-mute);">Category</th>
+        <th class="smallcap-sm w-[25%]" style="color:var(--ink-mute);">GCP equivalent</th>
+        <th class="smallcap-sm w-[25%]" style="color:var(--ink-mute);">Azure equivalent</th>
       </tr>
     </thead>
     <tbody>
       ${filtered.map((s, i) => {
         const col = CAT[s.c] || {bg:"#E1F5EE",tc:"#085041",dkbg:"#042F2E",dktc:"#5EEAD4"};
-        const badgeBg = isDark ? (col.dkbg||col.bg) : col.bg;
-        const badgeTc = isDark ? (col.dktc||col.tc) : col.tc;
-        const rowCls = i % 2 === 0
-          ? 'bg-white dark:bg-slate-900'
-          : 'bg-slate-50/60 dark:bg-slate-800/40';
-        return `<tr class="${rowCls} border-t border-slate-100 dark:border-slate-800 hover:bg-amber-50/40 dark:hover:bg-amber-900/10 transition-colors">
-          <td class="px-4 py-2.5 align-top">
-            <div class="mono text-[11px] text-slate-500 dark:text-slate-400">${s.r}</div>
-            <div class="text-xs text-slate-700 dark:text-slate-300 leading-snug mt-0.5">${s.h}</div>
+        const accentBg = isDark ? (col.dkbg||col.bg) : col.bg;
+        const accentFg = isDark ? (col.dktc||col.tc) : col.tc;
+        return `<tr>
+          <td>
+            <div class="f-display text-[17px] leading-tight" style="font-variation-settings:'opsz' 72;font-weight:600;">${s.r}</div>
+            <div class="f-display italic text-[13px] mt-1" style="color:var(--accent);font-variation-settings:'opsz' 36;">${s.h}</div>
           </td>
-          <td class="px-4 py-2.5 align-top whitespace-nowrap">
-            <span class="text-[10px] font-medium px-2 py-0.5 rounded-full" style="background:${badgeBg};color:${badgeTc}">${s.c}</span>
+          <td class="whitespace-nowrap">
+            <span class="smallcap-sm px-2 py-[3px]" style="background:${accentBg};color:${accentFg};">${s.c}</span>
           </td>
-          <td class="px-4 py-2.5 align-top text-xs text-slate-600 dark:text-slate-400">${s.gcp || '<span class="text-slate-300 dark:text-slate-600">&mdash;</span>'}</td>
-          <td class="px-4 py-2.5 align-top text-xs text-slate-600 dark:text-slate-400">${s.az || '<span class="text-slate-300 dark:text-slate-600">&mdash;</span>'}</td>
+          <td class="f-mono text-[12px]" style="color:var(--ink-mute);">${s.gcp || '<span style="opacity:.4;">—</span>'}</td>
+          <td class="f-mono text-[12px]" style="color:var(--ink-mute);">${s.az  || '<span style="opacity:.4;">—</span>'}</td>
         </tr>`;
       }).join('')}
     </tbody>
@@ -554,14 +825,12 @@ function buildPills(){
   document.getElementById("pills").innerHTML = allCats.map(c => {
     const isActive = c === active;
     const col = CAT[c];
-    const base = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-all duration-150 whitespace-nowrap shrink-0 select-none";
     if(isActive && c !== "All" && col){
-      return `<span class="${base}" style="background:${isDark?col.dkbg:col.bg};color:${isDark?col.dktc:col.tc}" onclick="setA('${c}')">${c}</span>`;
+      const bg = isDark?col.dkbg:col.bg;
+      const fg = isDark?col.dktc:col.tc;
+      return `<button class="pill smallcap-sm active shrink-0" style="background:${bg};color:${fg};border-color:${fg};" onclick="setA('${c}')">${c}</button>`;
     }
-    const activeClass = isActive
-      ? "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700"
-      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700";
-    return `<span class="${base} border ${activeClass}" onclick="setA('${c}')">${c}</span>`;
+    return `<button class="pill smallcap-sm ${isActive?'active':''} shrink-0" onclick="setA('${c}')">${c}</button>`;
   }).join("");
 }
 
@@ -741,7 +1010,7 @@ function renderAcronyms(){
   const empty = document.getElementById('acronym-empty');
   const wrap  = document.getElementById('acronym-table-wrap');
   const count = document.getElementById('acronym-count');
-  count.textContent = filtered.length + ' of ' + ACRONYMS.length + ' acronyms';
+  count.textContent = `${filtered.length} / ${ACRONYMS.length} entries`;
   if(!filtered.length){
     tbody.innerHTML = '';
     wrap.classList.add('hidden');
@@ -750,16 +1019,13 @@ function renderAcronyms(){
   }
   wrap.classList.remove('hidden');
   empty.classList.add('hidden');
-  tbody.innerHTML = filtered.map((item, i) => {
-    const rowCls = i % 2 === 0
-      ? 'bg-white dark:bg-slate-900'
-      : 'bg-slate-50/60 dark:bg-slate-800/40';
-    return `<tr class="${rowCls} border-t border-slate-100 dark:border-slate-800 hover:bg-amber-50/40 dark:hover:bg-amber-900/10 transition-colors">
-      <td class="px-4 py-2.5 align-top">
-        <span class="mono font-semibold text-amber-600 dark:text-amber-400 text-xs">${item.a}</span>
+  tbody.innerHTML = filtered.map((item) => {
+    return `<tr>
+      <td>
+        <span class="f-mono font-semibold text-[13px]" style="color:var(--accent);">${item.a}</span>
       </td>
-      <td class="px-4 py-2.5 align-top text-xs text-slate-700 dark:text-slate-300">${item.f}</td>
-      <td class="px-4 py-2.5 align-top text-xs text-slate-500 dark:text-slate-400">${item.d}</td>
+      <td class="f-display text-[15px]" style="font-variation-settings:'opsz' 48;font-weight:500;">${item.f}</td>
+      <td class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">${item.d}</td>
     </tr>`;
   }).join('');
 }
