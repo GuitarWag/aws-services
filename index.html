@@ -751,6 +751,106 @@ flowchart TD
     </div>
     <p class="text-[12px] mb-4" style="color:var(--ink-mute);">Note: resource-based policy Allow can short-circuit to Allow <em>without</em> an identity-based policy — useful for cross-account S3 access. For same-account calls, both sides must allow.</p>
 
+    <div class="rule-top mb-8 mt-4"></div>
+
+    <!-- ── I. IAM Pitfalls ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">I — Three Pitfalls to Avoid</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">These mistakes appear consistently across all three clouds. Each one has cost organisations real money or caused a real breach.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 mb-8">
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">Pitfall 01</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEE2E2] text-[#991B1B] dark:bg-[#450A0A] dark:text-[#FCA5A5]">All clouds</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Static Credentials</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Long-lived keys that never expire</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          <strong style="color:var(--ink);">AWS:</strong> IAM User access keys — two strings that grant permanent access. Developers accidentally commit them to public GitHub repos constantly.<br><br>
+          <strong style="color:var(--ink);">GCP:</strong> Service account key pairs — JSON files that can be leaked just as easily.<br><br>
+          <strong style="color:var(--ink);">Azure:</strong> Storage account access keys and app registration secrets — one leak = full access.
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Fix: use IAM Roles · Service Account impersonation · Managed Identities — no keys to leak</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">Pitfall 02</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FED7AA] text-[#9A3412] dark:bg-[#431407] dark:text-[#FDBA74]">All clouds</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Over-permissive Managed Policies</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Provider-managed policies are intentionally broad</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          AWS managed policies like <code>AdministratorAccess</code> or <code>S3FullAccess</code> are designed for the widest possible use case — they violate least-privilege by definition. AWS also lets you use <code>*</code> in both Action and Resource fields.<br><br>
+          GCP/Azure: assigning a high-scope role (Owner, Contributor) at the org level grants access to every child resource automatically via inheritance.
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Fix: customer-managed policies · IAM Access Analyzer · Policy Analyzer · least-privilege audit</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">Pitfall 03</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEE2E2] text-[#991B1B] dark:bg-[#450A0A] dark:text-[#FCA5A5]">All clouds</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Unintended Public Access</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Config that silently opens resources to the internet</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          <strong style="color:var(--ink);">AWS:</strong> Resource-based policy with <code>"Principal": "*"</code> makes the resource public. S3 Block Public Access is a safeguard but can be disabled.<br><br>
+          <strong style="color:var(--ink);">GCP:</strong> Binding <code>allUsers</code> or <code>allAuthenticatedUsers</code> makes a resource world-readable — these are <em>all Google accounts on the internet</em>, not just your org.<br><br>
+          <strong style="color:var(--ink);">Azure:</strong> Anonymous access on storage containers or public endpoint misconfiguration.
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Fix: IAM Access Analyzer · S3 Block Public Access · GCP Org Policy constraints/iam.allowedPolicyMemberDomains</div>
+      </article>
+
+    </div>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── J. Guardrails ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">J — Guardrails: Controlling Access at Scale</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">Guardrails sit <em>above</em> individual IAM policies — they constrain what even admins can grant. Essential for multi-account or multi-project environments.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 mb-8">
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">AWS</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]">Org-level</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Service Control Policies</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">The outer fence for AWS accounts</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Applied to an org, OU, or account via AWS Organizations. Even if an IAM admin attaches <code>AdministratorAccess</code>, they can't exceed what the SCP permits. SCPs are <strong>allow lists or deny lists</strong> — they never grant permissions themselves.<br><br>AWS also evaluates <strong>resource-based policies, Permissions Boundaries, and Session Policies</strong> in a layered stack — the most restrictive wins.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Scope: Organization · OU · Account · no effect on management account</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">GCP</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#D1FAE5] text-[#065F46] dark:bg-[#064E3B] dark:text-[#6EE7B7]">Deny-first</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">IAM Deny Policies &amp; Org Policies</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Explicit deny beats any allow</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);"><strong style="color:var(--ink);">IAM Deny Policy:</strong> explicit rules blocking specific principals from specific actions, regardless of what their role allows. Evaluated before any Allow bindings — first-class deny semantics.<br><br><strong style="color:var(--ink);">Organization Policy:</strong> resource-level constraints (e.g. <code>constraints/iam.allowedPolicyMemberDomains</code>) applied across org/folder/project. Prevents misconfigurations like <code>allUsers</code> bindings across an entire org.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Scope: Organization · Folder · Project — inherits downward</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">Azure</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#EDE9FE] text-[#5B21B6] dark:bg-[#2E1065] dark:text-[#C4B5FD]">Multi-layer</span>
+        </div>
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Azure Policy &amp; Resource Locks</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Policy monitors; locks protect</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          <strong style="color:var(--ink);">Azure Policy:</strong> Monitors and enforces configuration rules (e.g. "all storage must use TLS 1.2", "resources must be tagged"). Can audit, deny, or remediate.<br><br>
+          <strong style="color:var(--ink);">Deny Assignments:</strong> Blocks specific principals from specific actions even if a role assignment allows them — the most robust guardrail.<br><br>
+          <strong style="color:var(--ink);">Resource Locks:</strong> <code>ReadOnly</code> or <code>Delete</code> locks prevent modification/deletion — even Owners can't override without removing the lock first.<br><br>
+          <strong style="color:var(--ink);">Conditional Access:</strong> If-then policies for user login (require MFA, block non-compliant devices).
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Scope: Management Group · Subscription · Resource Group · Resource</div>
+      </article>
+
+    </div>
+
   </section>
 
   <!-- ═══════════════ COLOPHON ═══════════════ -->
