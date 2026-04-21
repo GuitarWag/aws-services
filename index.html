@@ -183,6 +183,11 @@
 
     /* Focus ring — ink outline, not purple */
     *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* IAM flow diagram */
+    .iam-flow-box { border: 1px solid var(--rule); padding: 16px 18px; }
+    .dark .iam-flow-box { background: var(--bg-soft); }
+    .iam-arrow { padding: 0 8px; font-size: 22px; color: var(--accent); flex-shrink: 0; align-self: center; }
   </style>
 </head>
 <body class="min-h-screen relative">
@@ -253,6 +258,7 @@
         <button onclick="setTab('services')" id="tab-services" class="tab">Services</button>
         <button onclick="setTab('matrix')"   id="tab-matrix"   class="tab">Cross-Cloud Matrix</button>
         <button onclick="setTab('acronyms')" id="tab-acronyms" class="tab">Acronym Index</button>
+        <button onclick="setTab('iam')"      id="tab-iam"      class="tab">IAM Deep Dive</button>
       </nav>
 
       <div class="rule-thick"></div>
@@ -310,6 +316,360 @@
     </div>
     <p id="acronym-empty" class="hidden py-16 text-center f-display italic text-xl" style="color:var(--ink-mute);">No acronyms match your search.</p>
     <p id="acronym-count" class="mt-4 smallcap-sm text-right num-roman" style="color:var(--ink-mute);"></p>
+  </section>
+
+  <!-- ═══════════════ IAM DEEP DIVE ═══════════════ -->
+  <section id="iam-section" class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-8 pb-20 hidden">
+
+    <div class="grid grid-cols-12 gap-6 mb-6">
+      <div class="col-span-12 md:col-span-9">
+        <h2 class="f-display text-4xl md:text-5xl leading-none" style="font-variation-settings:'opsz' 96;font-weight:600;">
+          IAM <span class="italic" style="color:var(--accent);font-weight:500;">Deep Dive</span>
+        </h2>
+        <p class="f-display italic text-lg mt-3" style="color:var(--ink-mute);font-variation-settings:'opsz' 48;">
+          Identity &amp; Access Management — concepts, policy types, and how AWS compares to GCP and Azure.
+        </p>
+      </div>
+      <div class="col-span-12 md:col-span-3 md:text-right">
+        <p class="smallcap-sm mt-2" style="color:var(--ink-mute);">Source: AWS IAM User Guide</p>
+      </div>
+    </div>
+
+    <div class="rule-thick mb-8"></div>
+
+    <!-- ── A. Core Concepts ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">A — Core Concepts</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 mb-8">
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 01</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FED7AA] text-[#9A3412] dark:bg-[#431407] dark:text-[#FDBA74]">Identity</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Principal</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">The who making the request</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Any entity that can authenticate and make requests: a root user, IAM user, IAM role, federated user, or an AWS service acting on your behalf.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Root · IAM User · IAM Role · Federated · AWS Service</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 02</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]">Verification</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Authentication</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Prove you are who you claim to be</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Verify identity via password+MFA (console), access keys (CLI/SDK), or temporary STS tokens. Federated users authenticate externally via SAML 2.0 or OIDC.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Password · Access Keys · STS Token · SAML · OIDC</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 03</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#EDE9FE] text-[#5B21B6] dark:bg-[#2E1065] dark:text-[#C4B5FD]">Decision</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Authorization</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Should this action be allowed?</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">AWS evaluates all applicable policies. Default is <strong>implicit deny</strong>. Any explicit Deny wins. An Allow is needed on both sides for cross-account access.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Implicit Deny · Explicit Deny · Explicit Allow</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 04</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#D1FAE5] text-[#065F46] dark:bg-[#064E3B] dark:text-[#6EE7B7]">Rules</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Policy</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">The rulebook — a JSON document</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Defines permissions: <strong>Effect</strong> (Allow/Deny), <strong>Action</strong> (which API calls), <strong>Resource</strong> (which ARNs), and optional <strong>Condition</strong> keys.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Effect · Action · Resource · Condition</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 05</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#CCFBF1] text-[#115E59] dark:bg-[#042F2E] dark:text-[#5EEAD4]">Delegation</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Role</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">A temporary hat, not a person</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Not a user — no username or password. A set of permissions any trusted principal can assume temporarily. Eliminates long-lived credentials. EC2, Lambda, and cross-account users all use roles.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">AssumeRole · Temp Credentials · STS · Instance Profile</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">№ 06</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEE2E2] text-[#991B1B] dark:bg-[#450A0A] dark:text-[#FCA5A5]">Gatekeeper</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Trust Policy</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Who is allowed to assume this role?</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">A resource-based policy on the role itself. Specifies which principals (accounts, services, identity providers) are trusted to call sts:AssumeRole. Without it, no one can use the role.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">sts:AssumeRole · Principal · Condition · ExternalId</div>
+      </article>
+
+    </div>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── B. Authorization Flow ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">B — Request Authorization Flow</span></div>
+    <div class="overflow-x-auto mb-3">
+      <div class="flex items-stretch min-w-[700px]">
+        <div class="iam-flow-box flex-1">
+          <div class="smallcap-sm mb-2" style="color:var(--ink-mute);">Step 1</div>
+          <div class="f-display font-semibold text-lg" style="font-variation-settings:'opsz' 48;">Principal</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Sends API request with credentials</div>
+          <div class="f-mono text-[10px] mt-2" style="color:var(--accent);">User · Role · Service</div>
+        </div>
+        <div class="iam-arrow">→</div>
+        <div class="iam-flow-box flex-1">
+          <div class="smallcap-sm mb-2" style="color:var(--ink-mute);">Step 2</div>
+          <div class="f-display font-semibold text-lg" style="font-variation-settings:'opsz' 48;">Authentication</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Verify identity — who are you?</div>
+          <div class="f-mono text-[10px] mt-2" style="color:var(--accent);">Sig4 · STS token · OIDC</div>
+        </div>
+        <div class="iam-arrow">→</div>
+        <div class="iam-flow-box flex-1">
+          <div class="smallcap-sm mb-2" style="color:var(--ink-mute);">Step 3</div>
+          <div class="f-display font-semibold text-lg" style="font-variation-settings:'opsz' 48;">Policy Eval</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">All applicable policies checked</div>
+          <div class="f-mono text-[10px] mt-2" style="color:var(--accent);">SCP → Boundary → Identity → Resource</div>
+        </div>
+        <div class="iam-arrow">→</div>
+        <div class="iam-flow-box flex-1" style="border-color:var(--accent);">
+          <div class="smallcap-sm mb-2" style="color:var(--ink-mute);">Step 4</div>
+          <div class="f-display font-semibold text-lg" style="font-variation-settings:'opsz' 48;">Decision</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Default = Deny. Any explicit Deny wins.</div>
+          <div class="f-mono text-[10px] mt-2" style="color:var(--accent);">Allow · Implicit Deny · Explicit Deny</div>
+        </div>
+        <div class="iam-arrow">→</div>
+        <div class="iam-flow-box flex-1">
+          <div class="smallcap-sm mb-2" style="color:var(--ink-mute);">Step 5</div>
+          <div class="f-display font-semibold text-lg" style="font-variation-settings:'opsz' 48;">Resource</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Action executed if allowed</div>
+          <div class="f-mono text-[10px] mt-2" style="color:var(--accent);">S3 · EC2 · RDS · Lambda…</div>
+        </div>
+      </div>
+    </div>
+    <p class="text-[12px] mb-8" style="color:var(--ink-mute);">Policy evaluation order (outermost wins): SCP → Resource-based → Identity-based → Permissions Boundary → Session policies. An explicit <strong>Deny</strong> at any level overrides all Allows.</p>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── C. AssumeRole Flow ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">C — AssumeRole / Temporary Credentials</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">The mechanism that replaces long-lived credentials with short-lived, auto-rotating ones. Used by EC2, Lambda, cross-account access, and federated users.</p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-8">
+      <div>
+        <div class="iam-flow-box p-5" style="border-bottom:none;">
+          <span class="f-mono text-xs" style="color:var(--accent);">01</span>
+          <div class="f-display font-semibold text-[15px] mt-1" style="font-variation-settings:'opsz' 48;">Principal calls sts:AssumeRole</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Provides the ARN of the role it wants. E.g. EC2 instance requests its attached instance profile role.</div>
+        </div>
+        <div class="iam-flow-box p-5" style="border-bottom:none;">
+          <span class="f-mono text-xs" style="color:var(--accent);">02</span>
+          <div class="f-display font-semibold text-[15px] mt-1" style="font-variation-settings:'opsz' 48;">STS reads the Role's Trust Policy</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Checks if the calling principal is a trusted entity. If not listed → AccessDenied immediately.</div>
+        </div>
+        <div class="iam-flow-box p-5" style="border-bottom:none;">
+          <span class="f-mono text-xs" style="color:var(--accent);">03</span>
+          <div class="f-display font-semibold text-[15px] mt-1" style="font-variation-settings:'opsz' 48;">STS issues temporary credentials</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">Returns AccessKeyId + SecretAccessKey + SessionToken. Valid 15 min – 12 hr (default 1h).</div>
+        </div>
+        <div class="iam-flow-box p-5" style="border-bottom:none;">
+          <span class="f-mono text-xs" style="color:var(--accent);">04</span>
+          <div class="f-display font-semibold text-[15px] mt-1" style="font-variation-settings:'opsz' 48;">Principal uses creds for API calls</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">All calls now come from the Role's identity. AWS evaluates the role's identity-based policies for each action.</div>
+        </div>
+        <div class="iam-flow-box p-5">
+          <span class="f-mono text-xs" style="color:var(--accent);">05</span>
+          <div class="f-display font-semibold text-[15px] mt-1" style="font-variation-settings:'opsz' 48;">Credentials expire automatically</div>
+          <div class="text-[12px] mt-1" style="color:var(--ink-mute);">No revocation step needed — they just stop working. To continue, the principal calls AssumeRole again.</div>
+        </div>
+      </div>
+      <div class="iam-flow-box p-6 -ml-px">
+        <div class="f-mono text-[11px] mb-4 uppercase tracking-widest" style="color:var(--ink-mute);">Key facts</div>
+        <ul class="space-y-4 text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">
+          <li><strong style="color:var(--ink);">Roles ≠ Users.</strong> A role has no password or long-lived access keys. It's a set of permissions + a trust policy.</li>
+          <li><strong style="color:var(--ink);">Cross-account access</strong> works by having the target account's role trust the source account's principal — no credential sharing.</li>
+          <li><strong style="color:var(--ink);">EC2 Instance Profiles</strong> wrap a role and attach it to an EC2 instance. The SDK fetches credentials automatically from the metadata endpoint (169.254.169.254).</li>
+          <li><strong style="color:var(--ink);">ExternalId</strong> is a condition in the Trust Policy that prevents the <em>confused deputy</em> attack — a 3rd-party must prove it's acting on your behalf.</li>
+          <li><strong style="color:var(--ink);">OIDC Federation</strong> (e.g. GitHub Actions, K8s) lets external IdPs assume roles without creating IAM users — keyless CI/CD.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── D. Policy Types ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">D — Policy Types</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 mb-8">
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">identity-based</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#D1FAE5] text-[#065F46] dark:bg-[#064E3B] dark:text-[#6EE7B7]">Most common</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Identity-based Policy</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Attached to a user, group, or role. Grants what that identity can do across any resource. Can be AWS-managed, customer-managed, or inline.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Attach to: IAM User · Group · Role</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">resource-based</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]">Cross-account</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Resource-based Policy</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Attached to the resource (S3, KMS, Lambda, SQS…). Specifies who can access that resource. Enables cross-account access without assuming a role — the resource just trusts the external principal.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Attach to: S3 · KMS · SQS · Lambda · API GW</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">permissions boundary</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEE2E2] text-[#991B1B] dark:bg-[#450A0A] dark:text-[#FCA5A5]">Max ceiling</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Permissions Boundary</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Sets the maximum permissions an identity-based policy can grant. Effective permission = intersection of identity policy AND boundary. A ceiling, not a grant. Used to safely delegate role creation.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Attach to: IAM User · Role (not groups)</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">org-level</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#EDE9FE] text-[#5B21B6] dark:bg-[#2E1065] dark:text-[#C4B5FD]">Org guardrail</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Service Control Policy</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Applied at the AWS Organizations level to an account or OU. Even account admins can't exceed what the SCP allows. Controls the maximum available permissions across the entire account — guardrails, not grants.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Attach to: Organization · OU · Account</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">session-level</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FED7AA] text-[#9A3412] dark:bg-[#431407] dark:text-[#FDBA74]">Per-session</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Session Policy</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Passed inline when calling AssumeRole or GetFederationToken. Further restricts permissions for that specific session only. Can't grant beyond what the role already allows.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Used with: sts:AssumeRole · GetFederationToken</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="f-mono text-[10px]" style="color:var(--accent);">legacy</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#E7E5E4] text-[#44403C] dark:bg-[#1C1917] dark:text-[#A8A29E]">Mostly legacy</span>
+        </div>
+        <h3 class="f-display text-[18px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Access Control List</h3>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">Legacy resource-level permissions for S3 buckets and objects. Predates resource-based policies. AWS recommends using bucket policies instead. Still used for some cross-account S3 object grants.</p>
+        <div class="mt-auto f-mono text-[10px] pt-2" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Attach to: S3 Bucket · S3 Object</div>
+      </article>
+
+    </div>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── E. Cloud Comparison ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">E — AWS vs GCP vs Azure: Concept Mapping</span></div>
+
+    <div class="overflow-x-auto mb-4">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th class="smallcap-sm w-28" style="color:var(--ink-mute);">Category</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Concept</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">AWS</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">GCP</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Azure / Entra ID</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3" class="f-mono text-[11px] font-semibold align-top" style="color:var(--accent);">Identities</td>
+            <td class="text-[13px] font-medium">Human user</td>
+            <td class="f-mono text-[12px]">IAM User</td>
+            <td class="f-mono text-[12px]">Google Account / Cloud Identity</td>
+            <td class="f-mono text-[12px]">Entra User</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS IAM Users are account-local; GCP and Azure use centralised identity directories.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">Group</td>
+            <td class="f-mono text-[12px]">IAM Group</td>
+            <td class="f-mono text-[12px]">Google Group</td>
+            <td class="f-mono text-[12px]">Entra Group</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">All clouds let you attach permissions to groups. AWS groups can't be nested.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">Non-human / service identity</td>
+            <td class="f-mono text-[12px]">IAM Role</td>
+            <td class="f-mono text-[12px]">Service Account</td>
+            <td class="f-mono text-[12px]">Managed Identity / Service Principal</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS Roles are temporary; GCP Service Accounts can have long-lived keys (avoid) or use Workload Identity Federation.</td>
+          </tr>
+          <tr>
+            <td rowspan="3" class="f-mono text-[11px] font-semibold align-top" style="color:var(--accent);">Permissions</td>
+            <td class="text-[13px] font-medium">Permission definition</td>
+            <td class="f-mono text-[12px]">IAM Policy (JSON)</td>
+            <td class="f-mono text-[12px]">IAM Role (curated action bundles)</td>
+            <td class="f-mono text-[12px]">Role Definition</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS uses flexible JSON (Action/Resource/Condition). GCP roles are curated bundles. Azure roles define actions per resource type.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">Permission assignment</td>
+            <td class="f-mono text-[12px]">Attach policy to identity or resource</td>
+            <td class="f-mono text-[12px]">IAM Binding (principal + role + resource)</td>
+            <td class="f-mono text-[12px]">Role Assignment</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">GCP binds a principal to a role at a scope (org/project/resource). Azure uses scope-based assignments too.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">Resource-level access</td>
+            <td class="f-mono text-[12px]">Resource-based Policy</td>
+            <td class="f-mono text-[12px]">IAM Conditions on bindings</td>
+            <td class="f-mono text-[12px]">Azure ABAC / Role Assignment conditions</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS attaches a policy JSON to the resource. GCP uses conditions on bindings. Azure adds attribute-based conditions.</td>
+          </tr>
+          <tr>
+            <td rowspan="2" class="f-mono text-[11px] font-semibold align-top" style="color:var(--accent);">Temp Access</td>
+            <td class="text-[13px] font-medium">Assume a role / impersonate</td>
+            <td class="f-mono text-[12px]">sts:AssumeRole</td>
+            <td class="f-mono text-[12px]">Service Account impersonation</td>
+            <td class="f-mono text-[12px]">PIM role activation / Token Exchange</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS STS returns short-lived creds. GCP impersonates SA for an access token. Azure PIM activates an eligible role for a time window.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">External identity federation</td>
+            <td class="f-mono text-[12px]">OIDC Provider + AssumeRoleWithWebIdentity</td>
+            <td class="f-mono text-[12px]">Workload Identity Federation</td>
+            <td class="f-mono text-[12px]">Federated Identity Credentials</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">Lets GitHub Actions, K8s pods, etc. authenticate without long-lived keys. Keyless CI/CD on all three clouds.</td>
+          </tr>
+          <tr>
+            <td rowspan="3" class="f-mono text-[11px] font-semibold align-top" style="color:var(--accent);">Governance</td>
+            <td class="text-[13px] font-medium">Org-level guardrails</td>
+            <td class="f-mono text-[12px]">Service Control Policy (SCP)</td>
+            <td class="f-mono text-[12px]">Organization Policy</td>
+            <td class="f-mono text-[12px]">Azure Policy</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">All three restrict what's allowed at the org/folder/management-group level, overriding even admin permissions.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">SSO / centralised login</td>
+            <td class="f-mono text-[12px]">IAM Identity Center</td>
+            <td class="f-mono text-[12px]">Cloud Identity / Google Workspace</td>
+            <td class="f-mono text-[12px]">Entra ID SSO</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">AWS Identity Center manages access across all accounts. GCP uses Google Workspace / Cloud Identity. Azure Entra is the full IdP.</td>
+          </tr>
+          <tr>
+            <td class="text-[13px] font-medium">Audit / analyze access</td>
+            <td class="f-mono text-[12px]">IAM Access Analyzer · CloudTrail</td>
+            <td class="f-mono text-[12px]">Cloud Audit Logs · Policy Analyzer</td>
+            <td class="f-mono text-[12px]">Entra ID Logs · Azure Monitor</td>
+            <td class="text-[12px]" style="color:var(--ink-mute);">Access Analyzer flags resources exposed outside your account. CloudTrail logs every API call for forensics.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </section>
 
   <!-- ═══════════════ COLOPHON ═══════════════ -->
@@ -689,7 +1049,7 @@ function clearSearch(){
 
 function setTab(t){
   currentTab = t;
-  ['services','matrix','acronyms'].forEach(id => {
+  ['services','matrix','acronyms','iam'].forEach(id => {
     const btn = document.getElementById('tab-'+id);
     btn.classList.toggle('active', id === t);
   });
@@ -697,16 +1057,24 @@ function setTab(t){
   const pillsRow = document.getElementById('pills-row');
   const mainEl = document.querySelector('main');
   const acronymSection = document.getElementById('acronym-section');
+  const iamSection = document.getElementById('iam-section');
 
   if(t === 'acronyms'){
     pillsRow.classList.add('hidden');
     mainEl.classList.add('hidden');
     acronymSection.classList.remove('hidden');
+    iamSection.classList.add('hidden');
     renderAcronyms();
+  } else if(t === 'iam'){
+    pillsRow.classList.add('hidden');
+    mainEl.classList.add('hidden');
+    acronymSection.classList.add('hidden');
+    iamSection.classList.remove('hidden');
   } else {
     pillsRow.classList.remove('hidden');
     mainEl.classList.remove('hidden');
     acronymSection.classList.add('hidden');
+    iamSection.classList.add('hidden');
     const g = document.getElementById('grid');
     if(t === 'matrix'){
       g.className = '';
@@ -1036,7 +1404,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
     if(currentTab === 'acronyms'){
       document.getElementById('aq').focus();
-    } else {
+    } else if(currentTab !== 'iam'){
       document.getElementById('q').focus();
     }
   }
