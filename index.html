@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AWS Services — A Reference</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -670,6 +671,86 @@
       </table>
     </div>
 
+    <div class="rule-top mb-8 mt-4"></div>
+
+    <!-- ── F. Resource Hierarchy ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">F — Resource Hierarchy: How Each Cloud Structures Its Containers</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">AWS is account-centric with optional Organizations. Azure and GCP use strict hierarchical RBAC trees — permissions inherit downward. This matters because Azure/GCP let a role at a higher scope cover all children automatically.</p>
+    <div class="iam-flow-box p-4 mb-4 overflow-x-auto">
+      <div class="mermaid">
+graph TB
+  subgraph AWS ["AWS — Account-centric"]
+    direction TB
+    a0["Root (Organizations)"] --> a1["Org Unit / OU"]
+    a1 --> a2["Account"]
+    a2 --> a3["Resources"]
+  end
+  subgraph Azure ["Azure — Subscription-based RBAC"]
+    direction TB
+    b0["Root Management Group"] --> b1["Management Group"]
+    b1 --> b2["Subscription (billing unit)"]
+    b2 --> b3["Resource Group"]
+    b3 --> b4["Resources"]
+  end
+  subgraph GCP ["GCP — Project-based RBAC"]
+    direction TB
+    c0["Organization"] --> c1["Folder"]
+    c1 --> c2["Project (billing unit)"]
+    c2 --> c3["Resources"]
+  end
+      </div>
+    </div>
+    <p class="text-[12px] mb-8" style="color:var(--ink-mute);">Azure and GCP: permissions assigned at a higher scope <strong>inherit downward</strong> to all children. AWS does not have this natively — each account is isolated unless Organizations SCPs or resource policies are used.</p>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── G. Permissions Assignment Model ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">G — Permissions Assignment: AWS vs Azure &amp; GCP</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">Key structural difference: AWS bundles actions <em>and</em> resource ARNs in one JSON policy. Azure and GCP separate the role definition (what actions) from the scope (which resource) — they join at assignment time.</p>
+    <div class="iam-flow-box p-4 mb-4 overflow-x-auto">
+      <div class="mermaid">
+graph TB
+  subgraph AWS ["AWS — Actions + Resources in one Policy JSON"]
+    direction LR
+    ia["Identity\n(User / Role)"] -->|"attach policy"| pa["Policy JSON\n{ Action: s3:GetObject\n  Resource: arn:aws:s3:::my-bucket/* }"]
+    pa -->|"grants access to specific resource"| ra["Resource"]
+  end
+  subgraph AzGcp ["Azure & GCP — Role separate from Scope"]
+    direction TB
+    ib["Identity"] --> assign["Role Assignment / IAM Binding"]
+    rd["Role Definition\n{ Actions only\n  no resource ARNs }"] --> assign
+    sc["Scope\n(subscription / folder / project / resource)"] --> assign
+    assign -->|"effective permissions on scope + children"| rb["Resource(s)"]
+  end
+      </div>
+    </div>
+    <p class="text-[12px] mb-8" style="color:var(--ink-mute);">AWS consequence: wildcard resource (<code>*</code>) in a policy grants access to <em>all</em> resources of that type — dangerous. Azure/GCP: over-permissive role at high scope = inherits to all children — equally dangerous, different shape.</p>
+
+    <div class="rule-top mb-8"></div>
+
+    <!-- ── H. AWS Policy Evaluation Flowchart ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">H — AWS Policy Evaluation Logic</span></div>
+    <p class="f-display italic mb-6 text-[15px]" style="color:var(--ink-mute);font-variation-settings:'opsz' 36;">AWS checks policies in layers. An explicit Deny anywhere kills the request immediately. An Allow must survive all applicable layers to succeed.</p>
+    <div class="iam-flow-box p-4 mb-2 overflow-x-auto">
+      <div class="mermaid">
+flowchart TD
+  REQ(["API Request"]) --> D1{"Explicit Deny\nin any policy?"}
+  D1 -->|Yes| DENY(["❌ DENY"])
+  D1 -->|No| SCP{"SCP\nallows?"}
+  SCP -->|No / not in org| DENY
+  SCP -->|Yes| RBP{"Resource-based\npolicy Allow?"}
+  RBP -->|Yes| ALLOW(["✅ ALLOW"])
+  RBP -->|No| IBP{"Identity-based\npolicy Allow?"}
+  IBP -->|No| DENY
+  IBP -->|Yes| PB{"Permissions\nBoundary OK?"}
+  PB -->|Blocks| DENY
+  PB -->|OK| SP{"Session\nPolicy OK?"}
+  SP -->|Blocks| DENY
+  SP -->|OK| ALLOW
+      </div>
+    </div>
+    <p class="text-[12px] mb-4" style="color:var(--ink-mute);">Note: resource-based policy Allow can short-circuit to Allow <em>without</em> an identity-based policy — useful for cross-account S3 access. For same-account calls, both sides must allow.</p>
+
   </section>
 
   <!-- ═══════════════ COLOPHON ═══════════════ -->
@@ -1038,6 +1119,7 @@ function toggleDark(){
   render();
   if(currentTab === 'acronyms') renderAcronyms();
   buildPills();
+  renderMermaid();
 }
 
 function clearSearch(){
@@ -1415,8 +1497,34 @@ document.addEventListener('keydown', e => {
   }
 });
 
+function renderMermaid(){
+  const els = document.querySelectorAll('.mermaid');
+  els.forEach(el => { if(!el.dataset.src) el.dataset.src = el.textContent.trim(); });
+  els.forEach(el => { el.textContent = el.dataset.src; el.removeAttribute('data-processed'); });
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    theme: 'base',
+    themeVariables: isDark ? {
+      primaryColor: '#1C1812', primaryTextColor: '#E8E1D3', primaryBorderColor: '#9C9079',
+      lineColor: '#9C9079', secondaryColor: '#0E0C08', tertiaryColor: '#0E0C08',
+      mainBkg: '#1C1812', nodeBorder: '#9C9079', clusterBkg: '#0E0C08',
+      titleColor: '#D97706', edgeLabelBackground: '#1C1812',
+      fontFamily: '"IBM Plex Mono",monospace', fontSize: '12px',
+    } : {
+      primaryColor: '#E9E1CE', primaryTextColor: '#1A1510', primaryBorderColor: '#1A1510',
+      lineColor: '#1A1510', secondaryColor: '#F3EDE0', tertiaryColor: '#F3EDE0',
+      mainBkg: '#E9E1CE', nodeBorder: '#1A1510', clusterBkg: '#F3EDE0',
+      titleColor: '#9A3412', edgeLabelBackground: '#F3EDE0',
+      fontFamily: '"IBM Plex Mono",monospace', fontSize: '12px',
+    }
+  });
+  mermaid.run({ querySelector: '.mermaid' });
+}
+
 buildPills();
 setTab('services');
+renderMermaid();
 </script>
 
 </body>
