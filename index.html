@@ -256,10 +256,12 @@
 
       <!-- Tabs -->
       <nav id="tabs" class="flex items-end">
-        <button onclick="setTab('services')" id="tab-services" class="tab">Services</button>
-        <button onclick="setTab('matrix')"   id="tab-matrix"   class="tab">Cross-Cloud Matrix</button>
-        <button onclick="setTab('acronyms')" id="tab-acronyms" class="tab">Acronym Index</button>
-        <button onclick="setTab('iam')"      id="tab-iam"      class="tab">IAM Deep Dive</button>
+        <button onclick="setTab('services')"  id="tab-services"  class="tab">Services</button>
+        <button onclick="setTab('matrix')"   id="tab-matrix"    class="tab">Cross-Cloud Matrix</button>
+        <button onclick="setTab('acronyms')" id="tab-acronyms"  class="tab">Acronym Index</button>
+        <button onclick="setTab('iam')"      id="tab-iam"       class="tab">IAM Deep Dive</button>
+        <button onclick="setTab('support')"  id="tab-support"   class="tab">Support Plans</button>
+        <button onclick="setTab('wellarch')" id="tab-wellarch"  class="tab">Well-Architected</button>
       </nav>
 
       <div class="rule-thick"></div>
@@ -853,6 +855,290 @@ flowchart TD
 
   </section>
 
+  <!-- ═══════════════ SUPPORT PLANS ═══════════════ -->
+  <section id="support-section" class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-8 pb-20 hidden">
+
+    <div class="grid grid-cols-12 gap-6 mb-6">
+      <div class="col-span-12 md:col-span-9">
+        <h2 class="f-display text-4xl md:text-5xl leading-none" style="font-variation-settings:'opsz' 96;font-weight:600;">
+          Support <span class="italic" style="color:var(--accent);font-weight:500;">Plans</span>
+        </h2>
+        <p class="f-display italic text-lg mt-3" style="color:var(--ink-mute);font-variation-settings:'opsz' 48;">
+          Four tiers of AWS technical support — from free self-service to dedicated engineering teams.
+        </p>
+      </div>
+      <div class="col-span-12 md:col-span-3 md:text-right">
+        <p class="smallcap-sm mt-2" style="color:var(--ink-mute);">Source: AWS Support Documentation</p>
+      </div>
+    </div>
+
+    <div class="rule-thick mb-8"></div>
+
+    <!-- ── Plan Cards ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">A — Plan Comparison</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-0 mb-10">
+
+      <!-- Basic -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Tier 1</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#F3F4F6] text-[#374151] dark:bg-[#1F2937] dark:text-[#9CA3AF]">Free</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Basic</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Included with every account</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">24/7 self-service access to documentation, whitepapers, and re:Post community forums. Includes AWS Health Dashboard for service status and 7 core Trusted Advisor checks. No technical case support.</p>
+        <ul class="text-[12.5px] leading-relaxed mt-1 space-y-1 f-mono" style="color:var(--ink-mute);">
+          <li>✓ Documentation &amp; re:Post forums</li>
+          <li>✓ AWS Health Dashboard</li>
+          <li>✓ 7 core Trusted Advisor checks</li>
+          <li>✗ No tech support cases</li>
+        </ul>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">$0/mo · All accounts</div>
+      </article>
+
+      <!-- Business Support+ -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Tier 2</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]">Recommended</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Business Support+</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">24×7 engineers + GenAI assistance</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Real-time contextual responses via generative AI. 24/7 phone, web, and chat access to Cloud Support Engineers. Third-party software support (EC2 OS, popular stacks). Replaces Developer &amp; Business plans from Jan 2027.</p>
+        <ul class="text-[12.5px] leading-relaxed mt-1 space-y-1 f-mono" style="color:var(--ink-mute);">
+          <li>✓ 24x7 phone · chat · email</li>
+          <li>✓ &lt;30 min for business-critical</li>
+          <li>✓ 500+ Trusted Advisor checks</li>
+          <li>✓ AWS Support API</li>
+          <li>✓ 3rd-party software support</li>
+        </ul>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">From $29/mo · Per account</div>
+      </article>
+
+      <!-- Enterprise -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Tier 3</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FCD34D]">Enterprise</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Enterprise</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Dedicated TAM + fastest SLA</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Everything in Business Support+, plus a designated Technical Account Manager (TAM) who learns your environment. Includes AWS Security Incident Response and strategic business reviews with AWS experts.</p>
+        <ul class="text-[12.5px] leading-relaxed mt-1 space-y-1 f-mono" style="color:var(--ink-mute);">
+          <li>✓ &lt;15 min for production-critical</li>
+          <li>✓ Designated TAM</li>
+          <li>✓ Security Incident Response</li>
+          <li>✓ AWS Countdown event support</li>
+          <li>✓ Strategic business reviews</li>
+        </ul>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">From $5,000/mo · Per org</div>
+      </article>
+
+      <!-- Unified Operations -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Tier 4</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#EDE9FE] text-[#5B21B6] dark:bg-[#2E1065] dark:text-[#C4B5FD]">Premium</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Unified Operations</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">TAM + Domain Specialist Engineer</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Enterprise-tier support plus a Domain Specialist Engineer (DSE) embedded alongside your TAM. Adds infrastructure event management, operational runbooks, and AWS Countdown Premium for critical launch events.</p>
+        <ul class="text-[12.5px] leading-relaxed mt-1 space-y-1 f-mono" style="color:var(--ink-mute);">
+          <li>✓ TAM + Domain Specialist (DSE)</li>
+          <li>✓ AWS Countdown Premium</li>
+          <li>✓ Operational runbook reviews</li>
+          <li>✓ Critical workload assessments</li>
+          <li>✓ Arch guidance for applications</li>
+        </ul>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Contact AWS · Custom pricing</div>
+      </article>
+
+    </div>
+
+    <!-- ── Response Time Matrix ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">B — Response Time SLAs</span></div>
+    <div class="overflow-x-auto mb-10">
+      <table class="matrix-table text-[13px]">
+        <thead>
+          <tr>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Case Severity</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Basic</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Business Support+</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Enterprise</th>
+            <th class="smallcap-sm" style="color:var(--ink-mute);">Unified Operations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="f-mono text-[12px]">General guidance</td>
+            <td style="color:var(--ink-mute);">—</td>
+            <td>Business hours</td>
+            <td>Business hours</td>
+            <td>Business hours</td>
+          </tr>
+          <tr>
+            <td class="f-mono text-[12px]">System impaired</td>
+            <td style="color:var(--ink-mute);">—</td>
+            <td>&lt;12 hours</td>
+            <td>&lt;12 hours</td>
+            <td>&lt;12 hours</td>
+          </tr>
+          <tr>
+            <td class="f-mono text-[12px]">Production system impaired</td>
+            <td style="color:var(--ink-mute);">—</td>
+            <td>&lt;4 hours</td>
+            <td>&lt;4 hours</td>
+            <td>&lt;4 hours</td>
+          </tr>
+          <tr>
+            <td class="f-mono text-[12px]">Production system down</td>
+            <td style="color:var(--ink-mute);">—</td>
+            <td style="font-weight:600;">&lt;1 hour</td>
+            <td style="font-weight:600;">&lt;1 hour</td>
+            <td style="font-weight:600;">&lt;1 hour</td>
+          </tr>
+          <tr>
+            <td class="f-mono text-[12px]">Business-critical system down</td>
+            <td style="color:var(--ink-mute);">—</td>
+            <td style="font-weight:600;color:var(--accent);">&lt;30 min</td>
+            <td style="font-weight:600;color:var(--accent);">&lt;15 min</td>
+            <td style="font-weight:600;color:var(--accent);">&lt;15 min</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── EOL Notice ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">C — Lifecycle &amp; Migrations</span></div>
+    <div class="entry p-5 -mt-px -ml-px text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">
+      <strong style="color:var(--ink);">⚠ January 1, 2027:</strong> Developer Support and Business Support are discontinued and replaced by <strong style="color:var(--ink);">Business Support+</strong>. Enterprise On-Ramp will auto-upgrade to Enterprise Support on the same date. Existing plans remain available in <strong style="color:var(--ink);">AWS GovCloud (US)</strong> indefinitely.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ WELL-ARCHITECTED FRAMEWORK ═══════════════ -->
+  <section id="wellarch-section" class="max-w-[88rem] mx-auto px-6 sm:px-10 pt-8 pb-20 hidden">
+
+    <div class="grid grid-cols-12 gap-6 mb-6">
+      <div class="col-span-12 md:col-span-9">
+        <h2 class="f-display text-4xl md:text-5xl leading-none" style="font-variation-settings:'opsz' 96;font-weight:600;">
+          Well-<span class="italic" style="color:var(--accent);font-weight:500;">Architected</span>
+        </h2>
+        <p class="f-display italic text-lg mt-3" style="color:var(--ink-mute);font-variation-settings:'opsz' 48;">
+          Six pillars for evaluating and improving cloud architectures — the AWS design bible.
+        </p>
+      </div>
+      <div class="col-span-12 md:col-span-3 md:text-right">
+        <p class="smallcap-sm mt-2" style="color:var(--ink-mute);">Source: AWS Well-Architected Framework</p>
+      </div>
+    </div>
+
+    <div class="rule-thick mb-8"></div>
+
+    <!-- ── 6 Pillars ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">A — The Six Pillars</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 mb-10">
+
+      <!-- 1. Operational Excellence -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 1</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#D1FAE5] text-[#065F46] dark:bg-[#064E3B] dark:text-[#6EE7B7]">Operations</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Operational Excellence</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Run, monitor, and improve</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Running and monitoring systems to deliver business value, then continually improving processes and procedures. Key focus: operations as code, frequent small changes, anticipating failure, and learning from every event.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Ops as Code · Small Changes · Runbooks · Post-Mortems</div>
+      </article>
+
+      <!-- 2. Security -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 2</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEE2E2] text-[#991B1B] dark:bg-[#450A0A] dark:text-[#FCA5A5]">Security</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Security</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Protect information and systems</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Confidentiality, integrity, and availability of data. Strong identity foundation, enabling traceability, applying security at all layers, automating best practices, protecting data in transit and at rest, and keeping people away from data.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Least Privilege · Traceability · Encryption · Zero Trust</div>
+      </article>
+
+      <!-- 3. Reliability -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 3</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]">Resilience</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Reliability</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Recover quickly, serve consistently</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Workloads performing their intended function and recovering quickly from failures. Covers distributed system design, recovery planning, and adapting to changing requirements. Auto-recover, test recovery procedures, scale horizontally.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Auto-Recovery · Chaos Testing · Horizontal Scale · RTO/RPO</div>
+      </article>
+
+      <!-- 4. Performance Efficiency -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 4</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FCD34D]">Performance</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Performance Efficiency</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Right resource, right size, right time</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Structured and streamlined allocation of IT and computing resources. Selecting the right types and sizes, monitoring performance, and maintaining efficiency as business needs evolve. Democratize advanced tech, go global in minutes, use serverless.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Right-Sizing · Serverless · Benchmarking · Global Reach</div>
+      </article>
+
+      <!-- 5. Cost Optimization -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 5</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#CCFBF1] text-[#115E59] dark:bg-[#042F2E] dark:text-[#5EEAD4]">Cost</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Cost Optimization</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Pay for what you use, nothing more</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Avoiding unnecessary costs. Key topics: implement cloud financial management, adopt a consumption model, measure overall efficiency, stop paying for undifferentiated heavy lifting, and analyze &amp; attribute all expenditure to workloads.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">FinOps · Reserved/Spot · Cost Allocation · Usage Reports</div>
+      </article>
+
+      <!-- 6. Sustainability -->
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="smallcap-sm" style="color:var(--ink-mute);">Pillar 6</span>
+          <span class="smallcap-sm px-2 py-[3px] bg-[#DCFCE7] text-[#14532D] dark:bg-[#052E16] dark:text-[#86EFAC]">Sustainability</span>
+        </div>
+        <h3 class="f-display text-[22px] leading-[1.08]" style="font-variation-settings:'opsz' 96;font-weight:600;">Sustainability</h3>
+        <p class="f-display italic text-[15px] leading-snug" style="color:var(--accent);font-variation-settings:'opsz' 36;">Minimize environmental impact</p>
+        <p class="text-[13.5px] leading-relaxed" style="color:var(--ink-mute);">Minimizing the environmental impacts of running cloud workloads. Shared responsibility model for sustainability: understand impact, set goals, maximize utilization, adopt efficient hardware and software, use managed services, reduce downstream effects.</p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Carbon Footprint · Utilization · Managed Services · Efficiency</div>
+      </article>
+
+    </div>
+
+    <!-- ── WAF Tool & Lenses ── -->
+    <div class="mb-3"><span class="smallcap-sm" style="color:var(--ink-mute);">B — AWS Well-Architected Tool</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 mb-8">
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">AWS Well-Architected Tool</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Free self-service workload review</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          A free service in the console that helps you review the state of your workloads against the six pillars. Answer a set of questions and receive prioritized improvement recommendations with AWS documentation links. Workload reviews can be shared across accounts.
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Console → Well-Architected Tool · Free · All regions</div>
+      </article>
+
+      <article class="entry p-5 -mt-px -ml-px flex flex-col gap-2">
+        <h3 class="f-display text-[20px] leading-tight font-semibold" style="font-variation-settings:'opsz' 72;">Framework Lenses</h3>
+        <p class="f-display italic text-[13px]" style="color:var(--accent);font-variation-settings:'opsz' 36;">Specialised views for specific domains</p>
+        <p class="text-[13px] leading-relaxed" style="color:var(--ink-mute);">
+          AWS publishes official lenses that extend the six pillars for specific domains: <strong style="color:var(--ink);">Serverless</strong>, <strong style="color:var(--ink);">SaaS</strong>, <strong style="color:var(--ink);">Machine Learning</strong>, <strong style="color:var(--ink);">IoT</strong>, <strong style="color:var(--ink);">Data Analytics</strong>, <strong style="color:var(--ink);">Healthcare</strong>, and more. Partners can publish custom lenses too. Each lens adds domain-specific best practice questions on top of the core pillars.
+        </p>
+        <div class="mt-auto pt-3 f-mono text-[11px]" style="border-top:1px dashed var(--ink-mute);color:var(--ink-mute);">Serverless · SaaS · ML · IoT · Data Analytics · Healthcare</div>
+      </article>
+
+    </div>
+
+  </section>
+
   <!-- ═══════════════ COLOPHON ═══════════════ -->
   <footer class="max-w-[88rem] mx-auto px-6 sm:px-10 pb-10">
     <div class="rule-thick"></div>
@@ -1231,33 +1517,46 @@ function clearSearch(){
 
 function setTab(t){
   currentTab = t;
-  ['services','matrix','acronyms','iam'].forEach(id => {
+  ['services','matrix','acronyms','iam','support','wellarch'].forEach(id => {
     const btn = document.getElementById('tab-'+id);
-    btn.classList.toggle('active', id === t);
+    if(btn) btn.classList.toggle('active', id === t);
   });
 
   const pillsRow = document.getElementById('pills-row');
   const mainEl = document.querySelector('main');
   const acronymSection = document.getElementById('acronym-section');
   const iamSection = document.getElementById('iam-section');
+  const supportSection = document.getElementById('support-section');
+  const wellarchSection = document.getElementById('wellarch-section');
+
+  const staticSections = [acronymSection, iamSection, supportSection, wellarchSection];
 
   if(t === 'acronyms'){
     pillsRow.classList.add('hidden');
     mainEl.classList.add('hidden');
+    staticSections.forEach(s => s.classList.add('hidden'));
     acronymSection.classList.remove('hidden');
-    iamSection.classList.add('hidden');
     renderAcronyms();
   } else if(t === 'iam'){
     pillsRow.classList.add('hidden');
     mainEl.classList.add('hidden');
-    acronymSection.classList.add('hidden');
+    staticSections.forEach(s => s.classList.add('hidden'));
     iamSection.classList.remove('hidden');
     renderMermaid();
+  } else if(t === 'support'){
+    pillsRow.classList.add('hidden');
+    mainEl.classList.add('hidden');
+    staticSections.forEach(s => s.classList.add('hidden'));
+    supportSection.classList.remove('hidden');
+  } else if(t === 'wellarch'){
+    pillsRow.classList.add('hidden');
+    mainEl.classList.add('hidden');
+    staticSections.forEach(s => s.classList.add('hidden'));
+    wellarchSection.classList.remove('hidden');
   } else {
     pillsRow.classList.remove('hidden');
     mainEl.classList.remove('hidden');
-    acronymSection.classList.add('hidden');
-    iamSection.classList.add('hidden');
+    staticSections.forEach(s => s.classList.add('hidden'));
     const g = document.getElementById('grid');
     if(t === 'matrix'){
       g.className = '';
